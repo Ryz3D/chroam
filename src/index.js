@@ -1,4 +1,4 @@
-import './index.css';
+import './styles/index.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
@@ -14,10 +14,19 @@ import MentionPage from './pages/mention';
 import TopicPage from './pages/topic';
 import SettingsPage from './pages/settings';
 import NotFoundPage from './pages/notFound';
+import { grey, purple, teal } from '@mui/material/colors';
 
 /*
 
 TODO:
+ - > for accordions
+ - * for bullets
+ - ^\s*\] for unchecked
+ - ^\[?x\] for checked
+ - replace bullets with checkboxes even though they are the same
+ - enter in checkbox line adds new check, in bullet line new bullet
+ - edit line of current cursor, display others
+  - if editing closed accordion
  - cloud logging?
  - plan tomorrow (notes to be shown in next daily?)
  - top menu
@@ -36,7 +45,7 @@ TODO:
  - last dailies and fav topics in sidebar
  - bullet points (optional with time picker)
  - checkboxes!
- - templates?
+ - templates? -> dailies and pages with optional text (checkbox/bullet structures)
  - list all pages with mentions
  - content first then pages and dailies (including sub-bullets) including topic
  - graph activity, share of topics over time
@@ -89,14 +98,45 @@ class App extends React.Component {
     };
   }
 
+  setDark(dark) {
+    localStorage.setItem('darkMode', dark ? '1' : '0');
+    this.setState({ dark });
+  }
+
   render() {
     const theme = createTheme({
       palette: {
         mode: this.state.dark ? 'dark' : 'light',
+        primary: {
+          light: teal.A100,
+          main: teal.A400,
+          dark: teal.A700,
+          contrastText: '#fff',
+        },
+        secondary: {
+          light: purple[300],
+          main: purple.A700,
+          dark: purple[500],
+          contrastText: '#fff',
+        },
+        info: this.state.dark ? teal : {
+          light: grey[700],
+          main: grey[800],
+          dark: grey[900],
+          contrastText: '#fff',
+        },
+      },
+      typography: {
+        fontFamily: "'Montserrat', 'Roboto', sans-serif",
+        fontWeightLight: 200,
+        fontWeightRegular: 400,
       },
     });
 
     const routeComponent = isIOS ? SimpleRoute : AnimationRoute;
+    const pageProps = {
+      setDark: (dark) => this.setDark(dark),
+    };
 
     return (
       <ThemeProvider theme={theme}>
@@ -106,11 +146,11 @@ class App extends React.Component {
             <Route path='*' element={React.createElement(routeComponent, {
               children:
                 <>
-                  <Route path='/' element={<DailyPage />} />
-                  <Route path='/mention' element={<MentionPage />} />
-                  <Route path='/topic' element={<TopicPage />} />
-                  <Route path='/settings' element={<SettingsPage setDark={(dark) => this.setState({ dark })} />} />
-                  <Route path='*' element={<NotFoundPage />} />
+                  <Route path='/' element={<DailyPage {...pageProps} />} />
+                  <Route path='/mention' element={<MentionPage {...pageProps} />} />
+                  <Route path='/topic' element={<TopicPage {...pageProps} />} />
+                  <Route path='/settings' element={<SettingsPage {...pageProps} />} />
+                  <Route path='*' element={<NotFoundPage {...pageProps} />} />
                 </>
             })} />
           </Routes>

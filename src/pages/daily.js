@@ -30,7 +30,7 @@ class DailyPage extends React.Component {
         this.date = urlDate || new Date();
         this.setState({
             highlighted: false,
-            content: { text: [ChroamDate.stringifyDate(this.date)] },
+            content: { text: [] },
         });
     }
 
@@ -40,15 +40,37 @@ class DailyPage extends React.Component {
         this.locationUpdate();
     }
 
-    lineChange(index, text) {
+    onLineChange(index, text) {
         const content = JSON.parse(JSON.stringify(this.state.content));
         if (index === content.length) {
-            content.push('');
+            content.text.push(text);
         }
-        content.text[index] = text;
+        else {
+            content.text[index] = text;
+        }
         this.setState({
             content,
         });
+    }
+
+    onNextLine(index, cb = () => { }) {
+        const content = JSON.parse(JSON.stringify(this.state.content));
+        content.text = [
+            ...content.text.slice(0, index + 1),
+            '',
+            ...content.text.slice(index + 1),
+        ];
+        this.setState({
+            content,
+        }, cb);
+    }
+
+    onDeleteLine(index, cb = () => { }) {
+        const content = JSON.parse(JSON.stringify(this.state.content));
+        content.text.splice(index, 1);
+        this.setState({
+            content,
+        }, cb);
     }
 
     render() {
@@ -68,7 +90,11 @@ class DailyPage extends React.Component {
                             </mui.IconButton>
                         </mui.Tooltip>
                     } />
-                <EditableTextComponent content={this.state.content} />
+                <EditableTextComponent
+                    content={this.state.content}
+                    onLineChange={(i, t) => this.onLineChange(i, t)}
+                    onNextLine={(i, cb) => this.onNextLine(i, cb)}
+                    onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)} />
             </BasicUIComponent>
         );
     }

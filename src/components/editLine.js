@@ -4,55 +4,90 @@ import * as mui from '@mui/material';
 class EditLineComponent extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            edit: false,
-        };
+        this.inputRef = React.createRef();
+        this.editLast = this.props.edit;
     }
 
-    setEdit(edit, event) {
-        if (event) {
-            // TODO
-            console.log(`set cursor based on ${event.clientX} and ${event.clientY}`);
+    componentDidUpdate() {
+        if (this.props.edit && !this.editLast) {
+            const input = this.inputRef.current.getElementsByTagName('div')[0].getElementsByTagName('textarea')[0];
+            input.selectionStart = input.selectionEnd = 10000;
         }
-        this.setState({ edit });
+        this.editLast = this.props.edit;
+    }
+
+    onClick(event) {
+        console.log(`set cursor based on ${event.clientX} and ${event.clientY}`);
+        this.props.onEdit(true);
+    }
+
+    onLineChange(event) {
+        if (event.target.value !== this.props.text) {
+            this.props.onLineChange(event.target.value);
+        }
     }
 
     onKeyDown(event) {
-        if (event.keyCode === 13) {
-            if (!event.shiftKey) {
-                // TODO
-                console.log('move to next line via prop onNextLine');
-            }
-            this.setState({ edit: false });
+        switch (event.keyCode) {
+            case 13: // enter
+                event.preventDefault();
+                if (!event.shiftKey) {
+                    this.props.onNextLine();
+                }
+                this.props.onEdit(false, event);
+                return false;
+            case 8: // backspace
+                if (!this.props.text) {
+                    event.preventDefault();
+                    this.props.onLastLine(true);
+                    return false;
+                }
+                break;
+            case 38: // arrow up
+                event.preventDefault();
+                this.props.onEdit(-1);
+                return false;
+            case 40: // arrow down
+                event.preventDefault();
+                this.props.onEdit(1);
+                return false;
+            default:
+                break;
         }
     }
 
     render() {
-        // TODO: LINE BREAK INPUT
-
+        const rootStyle = {
+            margin: this.props.edit ? '4px 0' : '5px 0',
+        };
         const inputStyle = {
-            width: '100%',
-            marginTop: '-2.5px',
-            marginLeft: '-14px',
-            height: '24px',
-            overflow: 'hidden',
+            width: '105.6%',
+            minHeight: '24px',
+            marginTop: '-3.5px',
+            marginLeft: '-8px',
+            marginRight: '-20px',
         };
         const textStyle = {
             width: '100%',
+            minHeight: '24px',
             cursor: 'pointer',
         };
 
         return (
-            this.state.edit ?
-                <mui.TextField
-                    variant='outlined' style={inputStyle}
-                    autoFocus onBlur={() => this.setEdit(false)}
-                    value={this.props.text} onChange={(e) => this.props.onChange(e.target.value)}
-                    onKeyDown={(e) => this.onKeyDown(e)} />
-                :
-                <div style={textStyle} onClick={(e) => this.setEdit(true, e)}>
-                    {this.props.text}
-                </div>
+            <div style={rootStyle}>
+                {this.props.edit ?
+                    <mui.TextField ref={this.inputRef}
+                        InputProps={{ style: { padding: '4px 8px' } }}
+                        multiline variant='outlined' style={inputStyle}
+                        autoFocus onBlur={() => this.props.onEdit(false)}
+                        value={this.props.text} onChange={(e) => this.onLineChange(e)}
+                        onKeyDown={(e) => this.onKeyDown(e)} />
+                    :
+                    <div style={textStyle} onClick={(e) => this.onClick(e)}>
+                        {this.props.text}
+                    </div>
+                }
+            </div>
         );
     }
 }

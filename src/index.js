@@ -1,4 +1,5 @@
 import './styles/index.css';
+import './styles/fonts.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
@@ -10,6 +11,7 @@ import { isIOS } from 'react-device-detect';
 import { initializeApp } from 'firebase/app';
 
 import DailyPage from './pages/daily';
+import CalendarPage from './pages/calendar';
 import MentionPage from './pages/mention';
 import TopicPage from './pages/topic';
 import SettingsPage from './pages/settings';
@@ -19,36 +21,24 @@ import { grey, purple, teal } from '@mui/material/colors';
 /*
 
 TODO:
- - > for accordions
- - * for bullets
- - ^\s*\] for unchecked
- - ^\[?x\] for checked
- - replace bullets with checkboxes even though they are the same
- - enter in checkbox line adds new check, in bullet line new bullet
- - edit line of current cursor, display others
-  - if editing closed accordion
  - cloud logging?
- - plan tomorrow (notes to be shown in next daily?)
- - top menu
-  - search/add topic
-  - last day
-  - next day
-  - highlight current daily
  - settings
   - light/dark
   - time/date mode
   - topic/mention format, default [] (what about mobile?)
   - auto-close bracket format
+  - ChroamItem format and matcher
+  - auto-initialize next checkbox, bullet, accordion
   - save all in localstorage!
 - local storage first, later optional db sync and share with auth (befriended users as topics)
- - calendar view with activity, edit or create dailies
- - last dailies and fav topics in sidebar
- - bullet points (optional with time picker)
- - checkboxes!
- - templates? -> dailies and pages with optional text (checkbox/bullet structures)
- - list all pages with mentions
- - content first then pages and dailies (including sub-bullets) including topic
- - graph activity, share of topics over time
+- last dailies and fav topics in sidebar
+- templates? -> dailies and pages with optional text (checkbox/bullet structures)
+- list all pages with mentions
+- content first then pages and dailies (including sub-bullets) including topic
+- graph activity, share of topics over time
+- graph mentions with numbers over time (space or comma separated), i.e. #mood 8
+- calendar view for dailies
+- link view (connection/reference diagram) for topics
 
 */
 
@@ -147,6 +137,7 @@ class App extends React.Component {
               children:
                 <>
                   <Route path='/' element={<DailyPage {...pageProps} />} />
+                  <Route path='/calendar' element={<CalendarPage {...pageProps} />} />
                   <Route path='/mention' element={<MentionPage {...pageProps} />} />
                   <Route path='/topic' element={<TopicPage {...pageProps} />} />
                   <Route path='/settings' element={<SettingsPage {...pageProps} />} />

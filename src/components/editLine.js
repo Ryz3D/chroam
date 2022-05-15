@@ -1,5 +1,12 @@
 import React from 'react';
 import * as mui from '@mui/material';
+import muiTheme from '../wrapper/muiTheme';
+import {
+    ArrowRight,
+    Check,
+    HorizontalRule,
+} from '@mui/icons-material';
+import ChroamItem from '../data/chroamItem';
 
 class EditLineComponent extends React.Component {
     constructor(props) {
@@ -56,6 +63,21 @@ class EditLineComponent extends React.Component {
         }
     }
 
+    checkboxClick(checked) {
+        var newText = this.props.text;
+        if (checked) {
+            newText = newText.replace(ChroamItem.uncheckedCheckboxMatch, '[x]');
+        }
+        else {
+            newText = newText.replace(ChroamItem.checkedCheckboxMatch, '[]');
+        }
+        this.props.onLineChange(newText);
+    }
+
+    accordionClick() {
+        console.log('toggle');
+    }
+
     render() {
         const rootStyle = {
             margin: this.props.edit ? '4px 0' : '5px 0',
@@ -66,10 +88,49 @@ class EditLineComponent extends React.Component {
             marginTop: '-3.5px',
             marginLeft: '-8px',
             marginRight: '-20px',
+            backgroundColor: this.props.theme.palette.primary.dark + '30',
+        };
+        const boxStyle = {
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '24px',
+            borderRadius: '4px',
+            border: this.props.highlight ? ('1px solid ' + this.props.theme.palette.primary.dark + '30') : '',
+            backgroundColor: this.props.highlight ? (this.props.theme.palette.primary.dark + '15') : '',
+        };
+        const checkboxStyle = {
+            position: 'relative',
+            verticalAlign: 'text-top',
+            width: '18px',
+            height: '18px',
+            borderRadius: '5px',
+            border: '2px solid ' + this.props.theme.palette.primary.main,
+            textAlign: 'center',
+            color: this.props.theme.palette.primary.main,
+            cursor: 'pointer',
+        };
+        const checkStyle = {
+            position: 'absolute',
+            top: '-3px',
+            left: '-2.5px',
+        };
+        const bulletStyle = {
+            marginBottom: '-4.5px',
+            marginRight: '-3px',
+            width: '100%',
+        };
+        const accordionStyle = {
+            marginBottom: '-4.5px',
+            marginLeft: '-2px',
+            marginRight: '-2px',
+            cursor: 'pointer',
         };
         const textStyle = {
             width: '100%',
-            minHeight: '24px',
+            height: '100%',
+            minHeight: '22px',
+            marginLeft: '3px',
             cursor: 'pointer',
         };
 
@@ -83,8 +144,33 @@ class EditLineComponent extends React.Component {
                         value={this.props.text} onChange={(e) => this.onLineChange(e)}
                         onKeyDown={(e) => this.onKeyDown(e)} />
                     :
-                    <div style={textStyle} onClick={(e) => this.onClick(e)}>
-                        {this.props.text}
+                    <div style={boxStyle}>
+                        {ChroamItem.isUncheckedCheckbox(this.props.text) &&
+                            <div style={checkboxStyle} onClick={() => this.checkboxClick(true)} />
+                        }
+                        {ChroamItem.isCheckedCheckbox(this.props.text) &&
+                            <div style={checkboxStyle} onClick={() => this.checkboxClick(false)}>
+                                <Check fontSize='small' style={checkStyle} />
+                            </div>
+                        }
+                        {ChroamItem.isBullet(this.props.text) &&
+                            <div>
+                                <HorizontalRule fontSize='small' style={bulletStyle} />
+                            </div>
+                        }
+                        {ChroamItem.isAccordion(this.props.text) &&
+                            <div onClick={() => this.accordionClick()}>
+                                <ArrowRight fontSize='small' style={accordionStyle} />
+                            </div>
+                        }
+                        <div style={textStyle} onClick={(e) => this.onClick(e)}>
+                            {this.props.text
+                                .replace(ChroamItem.uncheckedCheckboxMatch, '')
+                                .replace(ChroamItem.checkedCheckboxMatch, '')
+                                .replace(ChroamItem.bulletMatch, '')
+                                .replace(ChroamItem.accordionMatch, '')
+                            }
+                        </div>
                     </div>
                 }
             </div>
@@ -92,4 +178,4 @@ class EditLineComponent extends React.Component {
     }
 }
 
-export default EditLineComponent;
+export default muiTheme(EditLineComponent);

@@ -15,7 +15,6 @@ class DailyPage extends React.Component {
         this.date = new Date();
 
         this.state = {
-            highlighted: false,
             content: { text: [] },
         };
     }
@@ -29,15 +28,26 @@ class DailyPage extends React.Component {
         const urlDate = ChroamDate.deserializeDate(urlSearch.get('i') || '');
         this.date = urlDate || new Date();
         this.setState({
-            highlighted: false,
-            content: { text: [] },
+            content: JSON.parse(localStorage.getItem(ChroamDate.serializeDate(this.date)) || '{"text":[],"highlighted":false}'),
         });
     }
 
     onDaySwitch(forward) {
-        const nextDate = new Date(this.date.getTime() + 86400000 * (forward ? 1 : -1));
-        this.props.navigate('/?i=' + ChroamDate.serializeDate(nextDate));
-        this.locationUpdate();
+        var nextDate = null;
+        if (typeof (forward) === 'boolean') {
+            nextDate = new Date(this.date.getTime() + 86400000 * (forward ? 1 : -1));
+        }
+        else {
+            nextDate = forward;
+        }
+        if (nextDate !== null) {
+            this.props.navigate('/?i=' + ChroamDate.serializeDate(nextDate));
+            this.locationUpdate();
+        }
+    }
+
+    saveContent() {
+        localStorage.setItem(ChroamDate.serializeDate(this.date), JSON.stringify(this.state.content));
     }
 
     onLineChange(index, text) {
@@ -50,19 +60,20 @@ class DailyPage extends React.Component {
         }
         this.setState({
             content,
-        });
+        }, () => this.saveContent());
     }
 
-    onNextLine(index, cb = () => { }) {
+    onNextLine(index, cb = () => { }, t = '') {
+        console.log(t);
         const content = JSON.parse(JSON.stringify(this.state.content));
         content.text = [
             ...content.text.slice(0, index + 1),
-            '',
+            t,
             ...content.text.slice(index + 1),
         ];
         this.setState({
             content,
-        }, cb);
+        }, () => { this.saveContent(); cb(); });
     }
 
     onDeleteLine(index, cb = () => { }) {
@@ -70,7 +81,7 @@ class DailyPage extends React.Component {
         content.text.splice(index, 1);
         this.setState({
             content,
-        }, cb);
+        }, () => { this.saveContent(); cb(); });
     }
 
     render() {
@@ -82,10 +93,10 @@ class DailyPage extends React.Component {
                 <BigHeaderComponent
                     header={ChroamDate.stringifyDate(this.date, true)}
                     end={
-                        <mui.Tooltip arrow title={this.state.highlighted ? 'Highlighted' : 'Highlight'}>
+                        <mui.Tooltip arrow title={this.state.content.highlighted ? 'Highlighted' : 'Highlight'}>
                             <mui.IconButton size='large'
-                                color={this.state.highlighted ? 'warning' : 'default'}
-                                onClick={() => this.setState({ highlighted: !this.state.highlighted })}>
+                                color={this.state.content.highlighted ? 'warning' : 'default'}
+                                onClick={() => this.setState({ content: { ...this.state.content, highlighted: !this.state.content.highlighted } }, () => this.saveContent())}>
                                 {Icons.create(Icons.highlight.default)}
                             </mui.IconButton>
                         </mui.Tooltip>
@@ -93,7 +104,7 @@ class DailyPage extends React.Component {
                 <EditableTextComponent
                     content={this.state.content}
                     onLineChange={(i, t) => this.onLineChange(i, t)}
-                    onNextLine={(i, cb) => this.onNextLine(i, cb)}
+                    onNextLine={(i, cb, t) => this.onNextLine(i, cb, t)}
                     onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)} />
             </BasicUIComponent>
         );

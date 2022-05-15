@@ -1,6 +1,10 @@
 class ChroamDate {
     static serializeDate(date) {
-        return date.toJSON();
+        return date.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric',
+        }).replaceAll('/', '-');
     }
 
     static deserializeDate(str) {

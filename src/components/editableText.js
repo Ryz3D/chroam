@@ -1,6 +1,7 @@
 import React from 'react';
 import TextRootComponent from './textRoot';
 import EditLineComponent from './editLine';
+import ChroamItem from '../data/chroamItem';
 
 /*
 
@@ -27,19 +28,27 @@ class EditableTextComponent extends React.Component {
         return false;
     }
 
+    addIfNew() {
+        if (this.state.edit === this.props.content.text.length) {
+            this.props.onLineChange(this.state.edit, '');
+        }
+    }
+
     onEdit(i, v) {
         if (v !== true) {
             var editOverride = null;
             if (v === -1) {
                 editOverride = i - 1;
             }
-            if (this.deleteIfEmtpy(i, editOverride)) {
-                return;
+            if (!(v === 1 && i === this.props.content.text.length - 1)) {
+                if (this.deleteIfEmtpy(i, editOverride)) {
+                    return;
+                }
             }
         }
         switch (v) {
             case true:
-                this.setState({ edit: i });
+                this.setState({ edit: i }, () => this.addIfNew());
                 break;
             case false:
                 this.setState({ edit: -1 });
@@ -48,7 +57,8 @@ class EditableTextComponent extends React.Component {
                 this.setState({ edit: Math.max(i - 1, 0) });
                 break;
             case 1:
-                this.setState({ edit: Math.min(i + 1, this.props.content.text.length) });
+                const contentLength = this.props.content.text.findLastIndex(p => p) + 1;
+                this.setState({ edit: Math.min(i + 1, contentLength) }, () => this.addIfNew());
                 break;
             default:
                 break;
@@ -59,10 +69,20 @@ class EditableTextComponent extends React.Component {
         this.props.onLineChange(i, t);
     }
 
-    onNextLine(i) {
+    onNextLine(i, line) {
+        var newContent = '';
+        if (ChroamItem.isCheckbox(line)) {
+            newContent = '[] ';
+        }
+        if (ChroamItem.isBullet(line)) {
+            newContent = '- ';
+        }
+        if (ChroamItem.isAccordion(line)) {
+            // newContent = '> ';
+        }
         this.props.onNextLine(i, () => this.setState({
             edit: Math.min(i + 1, this.props.content.text.length),
-        }));
+        }), newContent);
     }
 
     onLastLine(i, del) {
@@ -79,21 +99,21 @@ class EditableTextComponent extends React.Component {
     }
 
     render() {
-        console.log(this.state.edit);
         return (
             <TextRootComponent>
                 {this.props.content.text.map((line, i) =>
                     <EditLineComponent key={i} text={line} edit={this.state.edit === i}
                         onEdit={(v) => this.onEdit(i, v)}
                         onLineChange={(t) => this.onLineChange(i, t)}
-                        onNextLine={() => this.onNextLine(i)}
+                        onNextLine={() => this.onNextLine(i, line)}
                         onLastLine={(d) => this.onLastLine(i, d)} />
                 )}
-                <EditLineComponent text='' focus={this.props.content.text.length === 0} edit={this.state.edit === this.props.content.text.length}
+                <EditLineComponent text='' edit={this.state.edit === this.props.content.text.length}
                     onEdit={(v) => this.onEdit(this.props.content.text.length, v)}
                     onLineChange={(t) => this.onLineChange(this.props.content.text.length, t)}
                     onNextLine={() => console.log('i refuse')}
-                    onLastLine={(d) => this.onLastLine(this.props.content.text.length, d)} />
+                    onLastLine={(d) => this.onLastLine(this.props.content.text.length, d)}
+                    highlight />
             </TextRootComponent>
         );
     }

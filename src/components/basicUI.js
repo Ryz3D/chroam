@@ -3,14 +3,18 @@ import * as mui from '@mui/material';
 import {
     Brightness3,
     Brightness7,
-    Delete as DeleteIcon,
+    CalendarMonth as CalendarMonthIcon,
     Forward as ForwardIcon,
     Menu as MenuIcon,
     MoreVert as MoreVertIcon,
+    Radar as RadarIcon,
+    Settings as SettingsIcon,
 } from '@mui/icons-material';
 import SearchBarComponent from './searchBar';
 import windowSize from '../wrapper/windowSize';
 import muiTheme from '../wrapper/muiTheme';
+import routerNavigate from '../wrapper/routerNavigate';
+import ChroamDate from '../data/chroamDate';
 
 class BasicUIComponent extends React.Component {
     constructor(props) {
@@ -21,6 +25,22 @@ class BasicUIComponent extends React.Component {
         };
     }
 
+    closeMenu() {
+        this.setState({
+            menuAnchor: null,
+        });
+    }
+
+    today() {
+        if (this.props.onDaySwitch) {
+            this.props.onDaySwitch(new Date());
+        }
+        else {
+            this.props.navigate('/?i=' + ChroamDate.serializeDate(new Date()));
+        }
+        this.closeMenu();
+    }
+
     render() {
         const showDaySwitcher = this.props.onDaySwitch && this.props.windowWidth > 420;
 
@@ -29,7 +49,7 @@ class BasicUIComponent extends React.Component {
         };
 
         return (
-            <div>
+            <div style={{ minWidth: '100vw', minHeight: '100vh' }}>
                 <mui.SwipeableDrawer open={this.state.drawerOpen}
                     onOpen={() => this.setState({ drawerOpen: true })}
                     onClose={() => this.setState({ drawerOpen: false })}>
@@ -37,10 +57,10 @@ class BasicUIComponent extends React.Component {
                         <mui.List>
                             <mui.ListItem button>
                                 <mui.ListItemIcon>
-                                    <DeleteIcon />
+                                    <SettingsIcon />
                                 </mui.ListItemIcon>
                                 <mui.ListItemText>
-                                    yo
+                                    Settings
                                 </mui.ListItemText>
                             </mui.ListItem>
                         </mui.List>
@@ -58,8 +78,8 @@ class BasicUIComponent extends React.Component {
                             <MoreVertIcon />
                         </mui.IconButton>
                         <mui.Menu anchorEl={this.state.menuAnchor}
-                            open={this.state.menuAnchor !== null} onClose={() => this.setState({ menuAnchor: null })}>
-                            <mui.MenuItem onClick={() => this.props.setDark(this.props.theme.palette.mode !== 'dark')}>
+                            open={this.state.menuAnchor !== null} onClose={() => this.closeMenu()}>
+                            <mui.MenuItem onClick={() => { this.props.setDark(this.props.theme.palette.mode !== 'dark'); this.closeMenu(); }}>
                                 <mui.ListItemIcon>
                                     {this.props.theme.palette.mode === 'dark' ?
                                         <Brightness7 />
@@ -75,24 +95,42 @@ class BasicUIComponent extends React.Component {
                                     }
                                 </mui.ListItemText>
                             </mui.MenuItem>
-                            {!showDaySwitcher && this.props.onDaySwitch && [
-                                <mui.MenuItem key={0} onClick={() => this.props.onDaySwitch(false)}>
-                                    <mui.ListItemIcon>
-                                        <ForwardIcon style={{ transform: 'scaleX(-1) translateX(2px)' }} />
-                                    </mui.ListItemIcon>
-                                    <mui.ListItemText>
-                                        Last daily
-                                    </mui.ListItemText>
-                                </mui.MenuItem>,
-                                <mui.MenuItem key={1} onClick={() => this.props.onDaySwitch(true)}>
-                                    <mui.ListItemIcon>
-                                        <ForwardIcon />
-                                    </mui.ListItemIcon>
-                                    <mui.ListItemText>
-                                        Next daily
-                                    </mui.ListItemText>
-                                </mui.MenuItem>
-                            ]}
+                            {!showDaySwitcher && this.props.onDaySwitch &&
+                                <>
+                                    <mui.MenuItem onClick={() => { this.props.onDaySwitch(false); this.closeMenu(); }}>
+                                        <mui.ListItemIcon>
+                                            <ForwardIcon style={{ transform: 'scaleX(-1) translateX(2px)' }} />
+                                        </mui.ListItemIcon>
+                                        <mui.ListItemText>
+                                            Last daily
+                                        </mui.ListItemText>
+                                    </mui.MenuItem>
+                                    <mui.MenuItem onClick={() => { this.props.onDaySwitch(true); this.closeMenu(); }}>
+                                        <mui.ListItemIcon>
+                                            <ForwardIcon />
+                                        </mui.ListItemIcon>
+                                        <mui.ListItemText>
+                                            Next daily
+                                        </mui.ListItemText>
+                                    </mui.MenuItem>
+                                </>
+                            }
+                            <mui.MenuItem onClick={() => this.today()}>
+                                <mui.ListItemIcon>
+                                    <RadarIcon />
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    Today's daily
+                                </mui.ListItemText>
+                            </mui.MenuItem>
+                            <mui.MenuItem onClick={() => this.props.navigate('/calendar')}>
+                                <mui.ListItemIcon>
+                                    <CalendarMonthIcon />
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    Calendar
+                                </mui.ListItemText>
+                            </mui.MenuItem>
                         </mui.Menu>
                         {showDaySwitcher &&
                             <>
@@ -118,4 +156,4 @@ class BasicUIComponent extends React.Component {
     }
 }
 
-export default windowSize(muiTheme(BasicUIComponent));
+export default routerNavigate(windowSize(muiTheme(BasicUIComponent)));

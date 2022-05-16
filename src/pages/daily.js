@@ -23,6 +23,11 @@ class DailyPage extends React.Component {
         this.locationUpdate();
     }
 
+    setPage(u) {
+        this.props.navigate(u);
+        this.locationUpdate();
+    }
+
     locationUpdate() {
         const urlSearch = new URLSearchParams(window.location.search);
         const urlDate = ChroamDate.deserializeDate(urlSearch.get('i') || '');
@@ -64,7 +69,6 @@ class DailyPage extends React.Component {
     }
 
     onNextLine(index, cb = () => { }, t = '') {
-        console.log(t);
         const content = JSON.parse(JSON.stringify(this.state.content));
         content.text = [
             ...content.text.slice(0, index + 1),
@@ -89,7 +93,7 @@ class DailyPage extends React.Component {
             <BasicUIComponent
                 setDark={this.props.setDark}
                 onDaySwitch={(f) => this.onDaySwitch(f)}
-                updatePage={() => this.locationUpdate()}>
+                setPage={(u) => this.setPage(u)}>
                 <BigHeaderComponent
                     header={ChroamDate.stringifyDate(this.date, true)}
                     end={

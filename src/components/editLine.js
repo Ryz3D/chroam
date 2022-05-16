@@ -7,18 +7,48 @@ import {
     HorizontalRule,
 } from '@mui/icons-material';
 import ChroamItem from '../data/chroamItem';
+import ChroamData from '../data/chroamData';
+import SearchPopoverComponent from './searchPopover';
 
 class EditLineComponent extends React.Component {
     constructor(props) {
         super(props);
         this.inputRef = React.createRef();
+        this.popoverRef = React.createRef();
         this.editLast = this.props.edit;
+        this.state = {
+            input: this.props.text || '',
+            search: '',
+            searchMention: false,
+        };
+    }
+
+    inputUpdate(t, initial = false) {
+        // NO WHITESPACE IN MENTION!
+        const matches = [...t.matchAll(/\[\[([äöüÄÖÜß\w\s]*)$/g), ...t.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
+        if (matches.length > 0) {
+            this.setState({
+                input: t,
+                search: matches[0][1],
+                searchMention: matches[0][0].startsWith('#'),
+            });
+        }
+        else {
+            this.setState({
+                input: t,
+                search: '',
+            });
+        }
+        if (t || !initial) {
+            this.props.onLineChange(t);
+        }
     }
 
     componentDidUpdate() {
         if (this.props.edit && !this.editLast) {
             const input = this.inputRef.current.getElementsByTagName('div')[0].getElementsByTagName('textarea')[0];
             input.selectionStart = input.selectionEnd = 10000;
+            this.inputUpdate(this.props.text, true);
         }
         this.editLast = this.props.edit;
     }
@@ -30,7 +60,7 @@ class EditLineComponent extends React.Component {
 
     onLineChange(event) {
         if (event.target.value !== this.props.text) {
-            this.props.onLineChange(event.target.value);
+            this.inputUpdate(event.target.value);
         }
     }
 
@@ -71,11 +101,35 @@ class EditLineComponent extends React.Component {
         else {
             newText = newText.replace(ChroamItem.checkedCheckboxMatch, '[]');
         }
-        this.props.onLineChange(newText);
+        this.inputUpdate(newText);
+    }
+
+    inputBlur(e) {
+        if (e.relatedTarget === null || !e.relatedTarget.id.startsWith('searchResult')) {
+            this.props.onEdit(false);
+        }
     }
 
     accordionClick() {
         console.log('toggle');
+    }
+
+    fillResult(u) {
+        const name = decodeURIComponent([...u.matchAll(/\?i=(.*)/g)][0][1]);
+        if (u.startsWith('/mention')) {
+            ChroamData.newMention(name);
+            this.inputUpdate(this.props.text.trimRight() + ' ');
+            this.setState({
+                search: '',
+            });
+        }
+        if (u.startsWith('/topic')) {
+            ChroamData.newTopic(name);
+            this.inputUpdate(this.props.text.trimRight() + ']] ');
+            this.setState({
+                search: '',
+            });
+        }
     }
 
     render() {
@@ -140,7 +194,7 @@ class EditLineComponent extends React.Component {
                     <mui.TextField ref={this.inputRef}
                         InputProps={{ style: { padding: '4px 8px' } }}
                         multiline variant='outlined' style={inputStyle}
-                        autoFocus onBlur={() => this.props.onEdit(false)}
+                        autoFocus onBlur={(e) => this.inputBlur(e)}
                         value={this.props.text} onChange={(e) => this.onLineChange(e)}
                         onKeyDown={(e) => this.onKeyDown(e)} />
                     :
@@ -172,6 +226,16 @@ class EditLineComponent extends React.Component {
                             }
                         </div>
                     </div>
+                }
+                {this.inputRef.current !== null &&
+                    <SearchPopoverComponent popoverRef={this.popoverRef}
+                        open={this.state.search !== '' && this.props.edit} onClose={() => { }}
+                        anchorEl={this.inputRef.current}
+                        query={this.state.search}
+                        allowTopic={!this.state.searchMention}
+                        allowDaily={false}
+                        allowMention={this.state.searchMention}
+                        setPage={(u) => this.fillResult(u)} />
                 }
             </div>
         );

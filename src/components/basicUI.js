@@ -72,7 +72,7 @@ class BasicUIComponent extends React.Component {
                             size='large' edge='start'>
                             <MenuIcon />
                         </mui.IconButton>
-                        <SearchBarComponent updatePage={this.props.updatePage} />
+                        <SearchBarComponent setPage={this.props.setPage} />
                         <mui.IconButton onClick={(e) => this.setState({ menuAnchor: e.currentTarget })}
                             size='large' edge={showDaySwitcher ? false : 'end'}>
                             <MoreVertIcon />
@@ -95,26 +95,24 @@ class BasicUIComponent extends React.Component {
                                     }
                                 </mui.ListItemText>
                             </mui.MenuItem>
-                            {!showDaySwitcher && this.props.onDaySwitch &&
-                                <>
-                                    <mui.MenuItem onClick={() => { this.props.onDaySwitch(false); this.closeMenu(); }}>
-                                        <mui.ListItemIcon>
-                                            <ForwardIcon style={{ transform: 'scaleX(-1) translateX(2px)' }} />
-                                        </mui.ListItemIcon>
-                                        <mui.ListItemText>
-                                            Last daily
-                                        </mui.ListItemText>
-                                    </mui.MenuItem>
-                                    <mui.MenuItem onClick={() => { this.props.onDaySwitch(true); this.closeMenu(); }}>
-                                        <mui.ListItemIcon>
-                                            <ForwardIcon />
-                                        </mui.ListItemIcon>
-                                        <mui.ListItemText>
-                                            Next daily
-                                        </mui.ListItemText>
-                                    </mui.MenuItem>
-                                </>
-                            }
+                            {!showDaySwitcher && this.props.onDaySwitch && [
+                                <mui.MenuItem key={0} onClick={() => { this.props.onDaySwitch(false); this.closeMenu(); }}>
+                                    <mui.ListItemIcon>
+                                        <ForwardIcon style={{ transform: 'scaleX(-1) translateX(2px)' }} />
+                                    </mui.ListItemIcon>
+                                    <mui.ListItemText>
+                                        Last daily
+                                    </mui.ListItemText>
+                                </mui.MenuItem>,
+                                <mui.MenuItem key={1} onClick={() => { this.props.onDaySwitch(true); this.closeMenu(); }}>
+                                    <mui.ListItemIcon>
+                                        <ForwardIcon />
+                                    </mui.ListItemIcon>
+                                    <mui.ListItemText>
+                                        Next daily
+                                    </mui.ListItemText>
+                                </mui.MenuItem>
+                            ]}
                             <mui.MenuItem onClick={() => this.today()}>
                                 <mui.ListItemIcon>
                                     <RadarIcon />

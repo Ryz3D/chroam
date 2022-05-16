@@ -23,53 +23,51 @@ class SearchPopoverComponent extends React.Component {
         };
     }
 
-    componentDidUpdate() {
-        if (this.props.query !== this.searchedQuery) {
-            if (this.props.query === '') {
-                this.setState({
-                    searchResults: this.recommendations,
-                    recommending: true,
-                });
-            }
-            else {
-                this.setState({
-                    searchResults: [{
-                        title: <>
-                            Searching for
-                            <i style={{ marginLeft: '5px' }}>
-                                {this.props.query}
-                            </i>
-                            ...
-                        </>,
-                        disabled: true,
-                    }],
-                    recommending: false,
-                });
-            }
-            this.searchedQuery = this.props.query;
+    doSearch() {
+        if (this.props.query === '') {
+            this.setState({
+                searchResults: this.recommendations,
+                recommending: true,
+            });
         }
+        else {
+            this.setState({
+                searchResults: [{
+                    title: <>
+                        Searching for
+                        <i style={{ marginLeft: '5px' }}>
+                            {this.props.query}
+                        </i>
+                        ...
+                    </>,
+                    disabled: true,
+                }],
+                recommending: false,
+            });
+        }
+        this.searchedQuery = this.props.query;
     }
 
-    updatePage() {
-        if (this.props.updatePage) {
-            this.props.updatePage();
+    componentDidMount() {
+        this.doSearch();
+    }
+
+    componentDidUpdate() {
+        if (this.props.query !== this.searchedQuery) {
+            this.doSearch();
         }
-        this.props.onClose();
     }
 
     createTopic() {
-        this.props.navigate(`/topic?i=${ChroamText.serializeText(this.props.query)}`);
-        this.updatePage();
+        this.props.setPage(`/topic?i=${ChroamText.serializeText(this.props.query)}`);
     }
 
     toDaily(date) {
-        this.props.navigate(`/?i=${ChroamDate.serializeDate(date)}`);
-        this.updatePage();
+        this.props.setPage(`/?i=${ChroamDate.serializeDate(date)}`);
     }
 
     createMention() {
-        this.props.navigate(`/mention?i=${ChroamText.serializeText(this.props.query)}`);
-        this.updatePage();
+        this.props.setPage(`/mention?i=${ChroamText.serializeText(this.props.query)}`);
     }
 
     render() {
@@ -101,23 +99,29 @@ class SearchPopoverComponent extends React.Component {
                         </SearchResultComponent>
                     )}
                     <mui.Divider />
-                    <SearchResultComponent type='topic' new disabled={this.props.query === ''}
-                        id={continueKey + 0} onClick={() => this.createTopic()}>
-                        Create topic
-                    </SearchResultComponent>
-                    <SearchResultComponent type='daily' new disabled={dateTyped === null}
-                        id={continueKey + 1} onClick={() => this.toDaily(dateTyped)}>
-                        Create daily
-                        {dateTyped !== null &&
-                            <mui.Typography color='GrayText' marginLeft='8px'>
-                                for {ChroamDate.stringifyDate(dateTyped)}
-                            </mui.Typography>
-                        }
-                    </SearchResultComponent>
-                    <SearchResultComponent type='mention' new disabled={this.props.query === ''}
-                        id={continueKey + 2} onClick={() => this.createMention()}>
-                        Create mention
-                    </SearchResultComponent>
+                    {(this.props.allowTopic === undefined || this.props.allowTopic) &&
+                        <SearchResultComponent type='topic' new disabled={this.props.query === ''}
+                            id={continueKey + 0} onClick={() => this.createTopic()}>
+                            Create topic
+                        </SearchResultComponent>
+                    }
+                    {(this.props.allowDaily === undefined || this.props.allowDaily) &&
+                        <SearchResultComponent type='daily' new disabled={dateTyped === null}
+                            id={continueKey + 1} onClick={() => this.toDaily(dateTyped)}>
+                            Create daily
+                            {dateTyped !== null &&
+                                <mui.Typography color='GrayText' marginLeft='8px'>
+                                    for {ChroamDate.stringifyDate(dateTyped)}
+                                </mui.Typography>
+                            }
+                        </SearchResultComponent>
+                    }
+                    {(this.props.allowTopic === undefined || this.props.allowMention) &&
+                        <SearchResultComponent type='mention' new disabled={this.props.query === ''}
+                            id={continueKey + 2} onClick={() => this.createMention()}>
+                            Create mention
+                        </SearchResultComponent>
+                    }
                 </mui.List>
             </mui.Popover >
         );

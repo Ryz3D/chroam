@@ -166,7 +166,7 @@ class EditLineComponent extends React.Component {
             textComponents.push(<Link key={i * 2 + 1} style={refCompStyle} id={`chroamref${i}`} to={isTopic ? `/topic?i=${encodeURIComponent(m[1])}` : `/mention?i=${encodeURIComponent(m[1])}`}>{m[0]}</Link>);
             index = m.index + m[0].length;
         }
-        
+        textComponents.push(<div key={matches.length * 2} style={textCompStyle}>{text.slice(index)}</div>);
 
         const rootStyle = {
             margin: this.props.edit ? '4px 0' : '5px 0',

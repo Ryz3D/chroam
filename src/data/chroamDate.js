@@ -8,10 +8,12 @@ class ChroamDate {
     }
 
     static deserializeDate(str) {
-        if (str)
-            return new Date(str);
-        else
+        if (str) {
+            const n = str.replace('/', '-').split('-');
+            return new Date(n[2], n[0] - 1, n[1]);
+        } else {
             return null;
+        }
     }
 
     static parseDate(str) {

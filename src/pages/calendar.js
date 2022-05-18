@@ -5,11 +5,20 @@ import routerNavigate from '../wrapper/routerNavigate';
 
 class CalendarPage extends React.Component {
     render() {
+        const rootStyle = {
+            width: '80%',
+            height: '100%',
+            margin: 'auto',
+            overflow: 'auto',
+        };
+
         return (
             <BasicUIComponent
                 setDark={this.props.setDark}
                 updatePage={() => this.locationUpdate()}>
-                <DailyCalendarComponent />
+                <div style={rootStyle}>
+                    <DailyCalendarComponent />
+                </div>
             </BasicUIComponent>
         );
     }

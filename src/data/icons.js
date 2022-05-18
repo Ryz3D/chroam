@@ -21,12 +21,18 @@ class Icons {
     static create(icon, options = {
         startIcon: false,
         endIcon: false,
+        secondary: false,
+        style: {},
+        props: {},
     }) {
         return React.createElement(icon, {
             style: {
-                marginRight: options.startIcon ? '10px' : '',
-                marginLeft: options.endIcon ? '10px' : '',
+                marginRight: options.startIcon ? '10px' : undefined,
+                marginLeft: options.endIcon ? '10px' : undefined,
+                color: options.secondary ? '#aaa' : undefined,
+                ...options.style,
             },
+            ...options.props,
         });
     }
 }

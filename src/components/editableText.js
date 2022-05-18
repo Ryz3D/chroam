@@ -98,6 +98,12 @@ class EditableTextComponent extends React.Component {
         }
     }
 
+    onLastNextLine(i) {
+        this.props.onDeleteLine(i, () => this.setState({
+            edit: i,
+        }));
+    }
+
     render() {
         return (
             <TextRootComponent>
@@ -106,13 +112,15 @@ class EditableTextComponent extends React.Component {
                         onEdit={(v) => this.onEdit(i, v)}
                         onLineChange={(t) => this.onLineChange(i, t)}
                         onNextLine={() => this.onNextLine(i, line)}
-                        onLastLine={(d) => this.onLastLine(i, d)} />
+                        onLastLine={(d) => this.onLastLine(i, d)}
+                        onLastNextLine={() => this.onLastNextLine(i)} />
                 )}
                 <EditLineComponent text='' edit={this.state.edit === this.props.content.text.length}
                     onEdit={(v) => this.onEdit(this.props.content.text.length, v)}
                     onLineChange={(t) => this.onLineChange(this.props.content.text.length, t)}
                     onNextLine={() => console.log('i refuse')}
                     onLastLine={(d) => this.onLastLine(this.props.content.text.length, d)}
+                    onLastNextLine={() => { }}
                     highlight />
             </TextRootComponent>
         );

@@ -9,6 +9,8 @@ import {
 import ChroamItem from '../data/chroamItem';
 import ChroamData from '../data/chroamData';
 import SearchPopoverComponent from './searchPopover';
+import { Link } from 'react-router-dom';
+import { teal } from '@mui/material/colors';
 
 class EditLineComponent extends React.Component {
     constructor(props) {
@@ -25,7 +27,7 @@ class EditLineComponent extends React.Component {
 
     inputUpdate(t, initial = false) {
         // NO WHITESPACE IN MENTION!
-        const matches = [...t.matchAll(/\[\[([äöüÄÖÜß\w\s]*)$/g), ...t.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
+        const matches = [...t.matchAll(/\[\[(.*)$/g), ...t.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
         if (matches.length > 0) {
             this.setState({
                 input: t,
@@ -54,8 +56,10 @@ class EditLineComponent extends React.Component {
     }
 
     onClick(event) {
-        console.log(`set cursor based on ${event.clientX} and ${event.clientY}`);
-        this.props.onEdit(true);
+        if (!event.target.id.startsWith('chroamref')) {
+            console.log(`set cursor based on ${event.clientX} and ${event.clientY}`);
+            this.props.onEdit(true);
+        }
     }
 
     onLineChange(event) {
@@ -77,6 +81,13 @@ class EditLineComponent extends React.Component {
                 if (!this.props.text) {
                     event.preventDefault();
                     this.props.onLastLine(true);
+                    return false;
+                }
+                break;
+            case 46: // delete
+                if (!this.props.text) {
+                    event.preventDefault();
+                    this.props.onLastNextLine();
                     return false;
                 }
                 break;
@@ -133,6 +144,30 @@ class EditLineComponent extends React.Component {
     }
 
     render() {
+        var text = this.props.text
+            .replace(ChroamItem.uncheckedCheckboxMatch, '')
+            .replace(ChroamItem.checkedCheckboxMatch, '')
+            .replace(ChroamItem.bulletMatch, '')
+            .replace(ChroamItem.accordionMatch, '');
+        const textComponents = [];
+        const matches = [...text.matchAll(/\[\[(.*?)\]\]/g), ...text.matchAll(/#([äöüÄÖÜß_-\w]*)/g)].sort((a, b) => a.index - b.index);
+        var index = 0;
+        const textCompStyle = {
+            display: 'inline',
+        };
+        const refCompStyle = {
+            ...textCompStyle,
+            color: teal.A700,
+        };
+        for (var i in matches) {
+            const m = matches[i];
+            const isTopic = m[0].startsWith('[[');
+            textComponents.push(<div key={i * 2} style={textCompStyle}>{text.slice(index, m.index)}</div>);
+            textComponents.push(<Link key={i * 2 + 1} style={refCompStyle} id={`chroamref${i}`} to={isTopic ? `/topic?i=${encodeURIComponent(m[1])}` : `/mention?i=${encodeURIComponent(m[1])}`}>{m[0]}</Link>);
+            index = m.index + m[0].length;
+        }
+        
+
         const rootStyle = {
             margin: this.props.edit ? '4px 0' : '5px 0',
         };
@@ -218,12 +253,7 @@ class EditLineComponent extends React.Component {
                             </div>
                         }
                         <div style={textStyle} onClick={(e) => this.onClick(e)}>
-                            {this.props.text
-                                .replace(ChroamItem.uncheckedCheckboxMatch, '')
-                                .replace(ChroamItem.checkedCheckboxMatch, '')
-                                .replace(ChroamItem.bulletMatch, '')
-                                .replace(ChroamItem.accordionMatch, '')
-                            }
+                            {textComponents}
                         </div>
                     </div>
                 }

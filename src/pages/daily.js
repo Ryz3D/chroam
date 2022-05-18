@@ -7,8 +7,6 @@ import Icons from '../data/icons';
 import ChroamDate from '../data/chroamDate';
 import EditableTextComponent from '../components/editableText';
 
-// today button in menu
-
 class DailyPage extends React.Component {
     constructor(props) {
         super(props);
@@ -104,6 +102,12 @@ class DailyPage extends React.Component {
                                 {Icons.create(Icons.highlight.default)}
                             </mui.IconButton>
                         </mui.Tooltip>
+                    }
+                    subheader={
+                        <>
+                            {Icons.create(Icons.daily.default, { secondary: true, style: { position: 'relative', top: '5.5px' } })}
+                            <div style={{ display: 'inline' }}>Daily</div>
+                        </>
                     } />
                 <EditableTextComponent
                     content={this.state.content}

@@ -1,26 +1,26 @@
 import { v4 as uuidv4 } from 'uuid';
 
 class ChroamData {
-    static getIDs() {
-        return JSON.parse(localStorage.getItem('data') || '[]');
+    static getEntries() {
+        return JSON.parse(localStorage.getItem('chroamData') || '[]');
     }
 
     static setEntries(data) {
-        localStorage.setItem('data', JSON.stringify(data));
+        localStorage.setItem('chroamData', JSON.stringify(data));
     }
 
     static hasName(name) {
-        return this.getIDs().findIndex(p => p.name === name) !== -1;
+        return this.getEntries().findIndex(p => p.name === name) !== -1;
     }
 
     static addEntry(type, name) {
         const id = uuidv4();
-        this.setEntries([...this.getIDs(), { id, type, name }]);
+        this.setEntries([...this.getEntries(), { id, type, name }]);
         return id;
     }
 
     static removeEntry(id) {
-        this.setEntries(this.getIDs().filter(p => p.id !== id));
+        this.setEntries(this.getEntries().filter(p => p.id !== id));
     }
 
     static newTopic(name) {

@@ -33,7 +33,6 @@ TODO:
 - local storage first, later optional db sync and share with auth (befriended users as topics)
 - last dailies and fav topics in sidebar
 - templates? -> dailies and pages with optional text (checkbox/bullet structures)
-- list all pages with mentions
 - content first then pages and dailies (including sub-bullets) including topic
 - graph activity, share of topics over time
 - graph mentions with numbers over time (space or comma separated), i.e. #mood 8

@@ -14,6 +14,7 @@ import muiTheme from '../wrapper/muiTheme';
 import routerNavigate from '../wrapper/routerNavigate';
 import ChroamDate from '../data/chroamDate';
 import Icons from '../data/icons';
+import logo192 from '../img/logo192.png';
 
 class BasicUIComponent extends React.Component {
     constructor(props) {
@@ -75,6 +76,7 @@ class BasicUIComponent extends React.Component {
                             <MenuIcon />
                         </mui.IconButton>
                         */}
+                        <img src={logo192} alt='CHROAM logo' height={40} style={{ height: '40px' }} />
                         <SearchBarComponent setPage={this.props.setPage} />
                         <mui.IconButton onClick={(e) => this.setState({ menuAnchor: e.currentTarget })}
                             size='large' edge={showDaySwitcher ? false : 'end'}>

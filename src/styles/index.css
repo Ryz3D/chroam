@@ -4,6 +4,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+    overflow: hidden;
+}
+
 .slide-enter {
     opacity: 0;
     transform: translate(40vw, 0);
@@ -14,4 +18,26 @@ body {
     opacity: 1;
     transform: translate(0, 0);
     transition: transform 300ms ease-out, opacity 500ms ease;
+}
+
+.highlight-btn:hover {
+    animation: wiggle 800ms cubic-bezier(0.07, 0.69, 0.57, 1.26);
+}
+
+@keyframes wiggle {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-20deg);
+    }
+
+    75% {
+        transform: rotate(20deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
 }

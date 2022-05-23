@@ -3,9 +3,7 @@ import * as mui from '@mui/material';
 import {
     Brightness3,
     Brightness7,
-    CalendarMonth as CalendarMonthIcon,
     Forward as ForwardIcon,
-    Menu as MenuIcon,
     MoreVert as MoreVertIcon,
     Radar as RadarIcon,
     Settings as SettingsIcon,
@@ -15,6 +13,7 @@ import windowSize from '../wrapper/windowSize';
 import muiTheme from '../wrapper/muiTheme';
 import routerNavigate from '../wrapper/routerNavigate';
 import ChroamDate from '../data/chroamDate';
+import Icons from '../data/icons';
 
 class BasicUIComponent extends React.Component {
     constructor(props) {
@@ -42,7 +41,7 @@ class BasicUIComponent extends React.Component {
     }
 
     render() {
-        const showDaySwitcher = this.props.onDaySwitch && this.props.windowWidth > 420;
+        const showDaySwitcher = this.props.onDaySwitch && this.props.windowWidth > 340;
 
         const rootStyle = {
             padding: '15px 20px',
@@ -50,6 +49,7 @@ class BasicUIComponent extends React.Component {
 
         return (
             <div style={{ minWidth: '100vw', minHeight: '100vh' }}>
+                {/*
                 <mui.SwipeableDrawer open={this.state.drawerOpen}
                     onOpen={() => this.setState({ drawerOpen: true })}
                     onClose={() => this.setState({ drawerOpen: false })}>
@@ -66,12 +66,15 @@ class BasicUIComponent extends React.Component {
                         </mui.List>
                     </mui.Box>
                 </mui.SwipeableDrawer>
+                */}
                 <mui.AppBar position='static'>
                     <mui.Toolbar>
+                        {/*
                         <mui.IconButton onClick={() => this.setState({ drawerOpen: true })}
                             size='large' edge='start'>
                             <MenuIcon />
                         </mui.IconButton>
+                        */}
                         <SearchBarComponent setPage={this.props.setPage} />
                         <mui.IconButton onClick={(e) => this.setState({ menuAnchor: e.currentTarget })}
                             size='large' edge={showDaySwitcher ? false : 'end'}>
@@ -123,10 +126,34 @@ class BasicUIComponent extends React.Component {
                             </mui.MenuItem>
                             <mui.MenuItem onClick={() => this.props.navigate('/calendar')}>
                                 <mui.ListItemIcon>
-                                    <CalendarMonthIcon />
+                                    {Icons.create(Icons.daily.default)}
                                 </mui.ListItemIcon>
                                 <mui.ListItemText>
                                     Calendar
+                                </mui.ListItemText>
+                            </mui.MenuItem>
+                            <mui.MenuItem onClick={() => this.props.navigate('/topics')}>
+                                <mui.ListItemIcon>
+                                    {Icons.create(Icons.topic.default)}
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    All Topics
+                                </mui.ListItemText>
+                            </mui.MenuItem>
+                            <mui.MenuItem onClick={() => this.props.navigate('/mentions')}>
+                                <mui.ListItemIcon>
+                                    {Icons.create(Icons.mention.default)}
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    All Mentions
+                                </mui.ListItemText>
+                            </mui.MenuItem>
+                            <mui.MenuItem onClick={() => this.props.navigate('/settings')}>
+                                <mui.ListItemIcon>
+                                    <SettingsIcon />
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    Settings
                                 </mui.ListItemText>
                             </mui.MenuItem>
                         </mui.Menu>

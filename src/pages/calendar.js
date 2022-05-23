@@ -15,9 +15,9 @@ class CalendarPage extends React.Component {
         return (
             <BasicUIComponent
                 setDark={this.props.setDark}
-                updatePage={() => this.locationUpdate()}>
+                setPage={(u) => this.props.navigate(u)}>
                 <div style={rootStyle}>
-                    <DailyCalendarComponent />
+                    <DailyCalendarComponent setPage={(u) => this.props.navigate(u)} />
                 </div>
             </BasicUIComponent>
         );

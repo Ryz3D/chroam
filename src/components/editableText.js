@@ -105,15 +105,33 @@ class EditableTextComponent extends React.Component {
     }
 
     render() {
+        const lineStyle = {
+            display: 'flex',
+            flexDirection: 'column',
+        };
+        const lineNStyle = {
+            position: 'absolute',
+            right: '15px',
+            color: '#777',
+            userSelect: 'none',
+        };
+
         return (
             <TextRootComponent>
                 {this.props.content.text.map((line, i) =>
-                    <EditLineComponent key={i} text={line} edit={this.state.edit === i}
-                        onEdit={(v) => this.onEdit(i, v)}
-                        onLineChange={(t) => this.onLineChange(i, t)}
-                        onNextLine={() => this.onNextLine(i, line)}
-                        onLastLine={(d) => this.onLastLine(i, d)}
-                        onLastNextLine={() => this.onLastNextLine(i)} />
+                    <div style={lineStyle} key={i}>
+                        <div>
+                            <EditLineComponent text={line} edit={this.state.edit === i}
+                                onEdit={(v) => this.onEdit(i, v)}
+                                onLineChange={(t) => this.onLineChange(i, t)}
+                                onNextLine={() => this.onNextLine(i, line)}
+                                onLastLine={(d) => this.onLastLine(i, d)}
+                                onLastNextLine={() => this.onLastNextLine(i)} />
+                        </div>
+                        <div style={lineNStyle}>
+                            #{i + 1}
+                        </div>
+                    </div>
                 )}
                 <EditLineComponent text='' edit={this.state.edit === this.props.content.text.length}
                     onEdit={(v) => this.onEdit(this.props.content.text.length, v)}

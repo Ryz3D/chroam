@@ -6,6 +6,7 @@ import BigHeaderComponent from '../components/bigHeader';
 import Icons from '../data/icons';
 import ChroamDate from '../data/chroamDate';
 import EditableTextComponent from '../components/editableText';
+import ChroamData from '../data/chroamData';
 
 class DailyPage extends React.Component {
     constructor(props) {
@@ -50,6 +51,7 @@ class DailyPage extends React.Component {
     }
 
     saveContent() {
+        ChroamData.newDaily(ChroamDate.serializeDate(this.date));
         localStorage.setItem(ChroamDate.serializeDate(this.date), JSON.stringify(this.state.content));
     }
 
@@ -95,13 +97,18 @@ class DailyPage extends React.Component {
                 <BigHeaderComponent
                     header={ChroamDate.stringifyDate(this.date, true)}
                     end={
-                        <mui.Tooltip arrow title={this.state.content.highlighted ? 'Highlighted' : 'Highlight'}>
-                            <mui.IconButton size='large'
-                                color={this.state.content.highlighted ? 'warning' : 'default'}
-                                onClick={() => this.setState({ content: { ...this.state.content, highlighted: !this.state.content.highlighted } }, () => this.saveContent())}>
-                                {Icons.create(Icons.highlight.default)}
-                            </mui.IconButton>
-                        </mui.Tooltip>
+                        <div className='highlight-btn'>
+                            <mui.Tooltip
+                                arrow
+                                title={this.state.content.highlighted ? 'Highlighted' : 'Highlight'}>
+                                <mui.IconButton
+                                    size='large'
+                                    color={this.state.content.highlighted ? 'warning' : 'default'}
+                                    onClick={() => this.setState({ content: { ...this.state.content, highlighted: !this.state.content.highlighted } }, () => this.saveContent())}>
+                                    {Icons.create(Icons.highlight.default)}
+                                </mui.IconButton>
+                            </mui.Tooltip>
+                        </div>
                     }
                     subheader={
                         <>

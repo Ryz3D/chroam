@@ -7,7 +7,6 @@ import {
     HorizontalRule,
 } from '@mui/icons-material';
 import ChroamItem from '../data/chroamItem';
-import ChroamData from '../data/chroamData';
 import SearchPopoverComponent from './searchPopover';
 import { Link } from 'react-router-dom';
 import { teal } from '@mui/material/colors';
@@ -27,7 +26,7 @@ class EditLineComponent extends React.Component {
 
     inputUpdate(t, initial = false) {
         // NO WHITESPACE IN MENTION!
-        const matches = [...t.matchAll(/\[\[(.*)$/g), ...t.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
+        const matches = [...t.matchAll(/\[\[([^\]]*)$/g), ...t.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
         if (matches.length > 0) {
             this.setState({
                 input: t,
@@ -56,7 +55,7 @@ class EditLineComponent extends React.Component {
     }
 
     onClick(event) {
-        if (!event.target.id.startsWith('chroamref')) {
+        if (!event.target.id.startsWith('chroamref') && !this.props.disabled) {
             console.log(`set cursor based on ${event.clientX} and ${event.clientY}`);
             this.props.onEdit(true);
         }
@@ -128,15 +127,13 @@ class EditLineComponent extends React.Component {
     fillResult(u) {
         const name = decodeURIComponent([...u.matchAll(/\?i=(.*)/g)][0][1]);
         if (u.startsWith('/mention')) {
-            ChroamData.newMention(name);
-            this.inputUpdate(this.props.text.trimRight() + ' ');
+            this.inputUpdate(this.props.text.replace(/#([äöüÄÖÜß_-\w]*)$/g, '').trimRight() + `#${name} `);
             this.setState({
                 search: '',
             });
         }
         if (u.startsWith('/topic')) {
-            ChroamData.newTopic(name);
-            this.inputUpdate(this.props.text.trimRight() + ']] ');
+            this.inputUpdate(this.props.text.replace(/\[\[([^\]]*)$/g, '').trimRight() + `[[${name}]] `);
             this.setState({
                 search: '',
             });
@@ -220,7 +217,7 @@ class EditLineComponent extends React.Component {
             height: '100%',
             minHeight: '22px',
             marginLeft: '3px',
-            cursor: 'pointer',
+            cursor: this.props.disabled ? '' : 'pointer',
         };
 
         return (

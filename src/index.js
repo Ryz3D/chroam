@@ -21,6 +21,7 @@ import { grey, purple, teal } from '@mui/material/colors';
 /*
 
 TODO:
+ - auto cleanup of empty localstorage items
  - cloud logging?
  - settings
   - light/dark
@@ -31,12 +32,9 @@ TODO:
   - auto-initialize next checkbox, bullet, accordion
   - save all in localstorage!
 - local storage first, later optional db sync and share with auth (befriended users as topics)
-- last dailies and fav topics in sidebar
 - templates? -> dailies and pages with optional text (checkbox/bullet structures)
-- content first then pages and dailies (including sub-bullets) including topic
 - graph activity, share of topics over time
 - graph mentions with numbers over time (space or comma separated), i.e. #mood 8
-- calendar view for dailies
 - link view (connection/reference diagram) for topics
 
 */
@@ -122,7 +120,8 @@ class App extends React.Component {
       },
     });
 
-    const routeComponent = isIOS ? SimpleRoute : AnimationRoute;
+    //const routeComponent = isIOS ? SimpleRoute : AnimationRoute;
+    const routeComponent = SimpleRoute;
     const pageProps = {
       setDark: (dark) => this.setDark(dark),
     };

@@ -2,7 +2,6 @@ import React from 'react';
 import * as mui from '@mui/material';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material';
 import ChroamDate from '../data/chroamDate';
-import routerNavigate from '../wrapper/routerNavigate';
 
 class DailyCalendarComponent extends React.Component {
     constructor(props) {
@@ -29,8 +28,7 @@ class DailyCalendarComponent extends React.Component {
 
     toDaily(day) {
         const date = new Date(this.state.year, this.state.month, day + 1);
-        this.props.navigate(`/?i=${ChroamDate.serializeDate(date)}`);
-        this.updatePage();
+        this.props.setPage(`/?i=${ChroamDate.serializeDate(date)}`);
     }
 
     prevMonth() {
@@ -63,7 +61,7 @@ class DailyCalendarComponent extends React.Component {
 
     openDaily(i) {
         const date = new Date(this.state.year, this.state.month, i + 1);
-        this.props.navigate('/?i=' + ChroamDate.serializeDate(date));
+        this.props.setPage('/?i=' + ChroamDate.serializeDate(date));
     }
 
     render() {
@@ -80,12 +78,14 @@ class DailyCalendarComponent extends React.Component {
         const gridStyle = {
             display: 'grid',
             gridTemplateColumns: 'auto auto auto auto auto auto auto',
-            backgroundColor: '#222e',
             borderRadius: '15px',
+            padding: '8px',
         };
         const itemStyle = {
             minWidth: '0',
             borderRadius: '15px',
+            textShadow: '0 0 2.5px #000',
+            boxShadow: '0 0 8px #0004',
         };
 
         return (
@@ -106,12 +106,13 @@ class DailyCalendarComponent extends React.Component {
                 <br />
                 <div style={gridStyle}>
                     {
-                        new Array((6 + weekdayOffset) % 7).fill(0).map(() => <div />)
+                        new Array((6 + weekdayOffset) % 7).fill(0).map((n, i) => <div key={i} />)
                     }
                     {
                         new Array(days).fill(0).map((_, i) =>
                             <mui.Button
-                                style={{ ...itemStyle, color: this.isLit(i) ? '#ff0' : undefined }}
+                                key={i}
+                                style={{ ...itemStyle, color: this.isLit(i) ? '#ff0' : undefined, zIndex: 10 + i }}
                                 variant={i === today && currentMonth ? 'contained' : (this.hasDaily(i) ? 'outlined' : 'text')}
                                 color={(i + weekdayOffset + 6) % 7 > 4 ? 'secondary' : 'primary'}
                                 onClick={() => this.openDaily(i)}>
@@ -125,4 +126,4 @@ class DailyCalendarComponent extends React.Component {
     }
 }
 
-export default routerNavigate(DailyCalendarComponent);
+export default DailyCalendarComponent;

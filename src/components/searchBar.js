@@ -92,7 +92,10 @@ class SearchBarComponent extends React.Component {
                         open={this.state.open} onClose={() => this.setState({ open: false, value: '' })}
                         anchorEl={this.inputRef.current}
                         query={this.state.value}
-                        setPage={(u) => { this.props.setPage(u); this.setState({ open: false, value: '' }); }} />
+                        setPage={(u) => { this.props.setPage(u); this.setState({ open: false, value: '' }); }}
+                        allowTopic={true}
+                        allowDaily={true}
+                        allowMention={true} />
                 }
             </>
         );

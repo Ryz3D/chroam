@@ -4,13 +4,21 @@ import BasicUIComponent from '../components/basicUI';
 import BigHeaderComponent from '../components/bigHeader';
 import Icons from '../data/icons';
 import EditableTextComponent from '../components/editableText';
+import LinkListComponent from '../components/linkList';
+import ChroamData from '../data/chroamData';
 
 class TopicPage extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            content: { text: [] },
+            entry: {
+                id: undefined,
+                name: '',
+            },
+            content: {
+                text: [],
+            },
         };
     }
 
@@ -25,15 +33,21 @@ class TopicPage extends React.Component {
 
     locationUpdate() {
         const urlSearch = new URLSearchParams(window.location.search);
-        this.name = urlSearch.get('i') || '';
-        // get or create id
+        const name = urlSearch.get('i') || '';
+        var id = (ChroamData.getEntryByName(name, 'topic') || {}).id;
+        if (id === undefined) {
+            id = ChroamData.newTopic(name);
+        }
         this.setState({
-            //content: JSON.parse(localStorage.getItem(ChroamDate.serializeDate(this.date)) || '{"text":[],"highlighted":false}'),
+            entry: ChroamData.getEntryById(id),
+            content: JSON.parse(localStorage.getItem(id)) || {
+                text: [],
+            },
         });
     }
 
     saveContent() {
-        // localStorage.setItem(ChroamDate.serializeDate(this.date), JSON.stringify(this.state.content));
+        localStorage.setItem(this.state.entry.id, JSON.stringify(this.state.content));
     }
 
     onLineChange(index, text) {
@@ -74,7 +88,7 @@ class TopicPage extends React.Component {
             <BasicUIComponent
                 setDark={this.props.setDark}
                 setPage={(u) => this.setPage(u)}>
-                <BigHeaderComponent header={this.name} subheader={
+                <BigHeaderComponent header={this.state.entry.name} subheader={
                     <>
                         {Icons.create(Icons.topic.default, { secondary: true, style: { position: 'relative', top: '5.5px' } })}
                         <div style={{ display: 'inline' }}>Topic</div>
@@ -85,6 +99,8 @@ class TopicPage extends React.Component {
                     onLineChange={(i, t) => this.onLineChange(i, t)}
                     onNextLine={(i, cb, t) => this.onNextLine(i, cb, t)}
                     onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)} />
+                <div style={{ height: '2rem' }} />
+                <LinkListComponent entry={this.state.entry} />
             </BasicUIComponent>
         );
     }

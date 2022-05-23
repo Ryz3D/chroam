@@ -10,12 +10,12 @@ class BigHeaderComponent extends React.Component {
         };
         const headerStyle = {
             fontFamily: '\'Montserrat\', sans-serif',
-            fontSize: '2.8rem',
+            fontSize: this.props.smaller ? '2.0rem' : '2.8rem',
             fontWeight: 200,
         };
         const subheaderStyle = {
             fontFamily: '\'Montserrat\', sans-serif',
-            fontSize: '1rem',
+            fontSize: this.props.smaller ? '0.8rem' : '1rem',
             fontWeight: 200,
         };
         const endStyle = {

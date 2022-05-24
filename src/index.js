@@ -14,6 +14,8 @@ import DailyPage from './pages/daily';
 import CalendarPage from './pages/calendar';
 import MentionPage from './pages/mention';
 import TopicPage from './pages/topic';
+import MentionsPage from './pages/mentions';
+import TopicsPage from './pages/topics';
 import SettingsPage from './pages/settings';
 import NotFoundPage from './pages/notFound';
 import { grey, purple, teal } from '@mui/material/colors';
@@ -138,6 +140,8 @@ class App extends React.Component {
                   <Route path='/calendar' element={<CalendarPage {...pageProps} />} />
                   <Route path='/mention' element={<MentionPage {...pageProps} />} />
                   <Route path='/topic' element={<TopicPage {...pageProps} />} />
+                  <Route path='/mentions' element={<MentionsPage {...pageProps} />} />
+                  <Route path='/topics' element={<TopicsPage {...pageProps} />} />
                   <Route path='/settings' element={<SettingsPage {...pageProps} />} />
                   <Route path='*' element={<NotFoundPage {...pageProps} />} />
                 </>

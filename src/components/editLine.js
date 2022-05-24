@@ -2,8 +2,9 @@ import React from 'react';
 import * as mui from '@mui/material';
 import muiTheme from '../wrapper/muiTheme';
 import {
-    ArrowRight,
-    Check,
+    ArrowRight as ArrowRightIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
     HorizontalRule,
 } from '@mui/icons-material';
 import ChroamItem from '../data/chroamItem';
@@ -77,7 +78,7 @@ class EditLineComponent extends React.Component {
                 this.props.onEdit(false, event);
                 return false;
             case 8: // backspace
-                if (!this.props.text) {
+                if (!this.props.text || event.shiftKey) {
                     event.preventDefault();
                     this.props.onLastLine(true);
                     return false;
@@ -204,7 +205,7 @@ class EditLineComponent extends React.Component {
         const bulletStyle = {
             marginBottom: '-4.5px',
             marginRight: '-3px',
-            width: '100%',
+            width: '17px',
         };
         const accordionStyle = {
             marginBottom: '-4.5px',
@@ -223,12 +224,19 @@ class EditLineComponent extends React.Component {
         return (
             <div style={rootStyle}>
                 {this.props.edit ?
+                    /*
+                    <div>
+                        <mui.IconButton style={{ position: 'absolute', left: '-40px', top: '-7px', zIndex: 100 }}>
+                            <CloseIcon />
+                        </mui.IconButton>
+                    */
                     <mui.TextField ref={this.inputRef}
                         InputProps={{ style: { padding: '4px 8px' } }}
                         multiline variant='outlined' style={inputStyle}
                         autoFocus onBlur={(e) => this.inputBlur(e)}
                         value={this.props.text} onChange={(e) => this.onLineChange(e)}
                         onKeyDown={(e) => this.onKeyDown(e)} />
+                    /*</div>*/
                     :
                     <div style={boxStyle}>
                         {ChroamItem.isUncheckedCheckbox(this.props.text) &&
@@ -236,7 +244,7 @@ class EditLineComponent extends React.Component {
                         }
                         {ChroamItem.isCheckedCheckbox(this.props.text) &&
                             <div style={checkboxStyle} onClick={() => this.checkboxClick(false)}>
-                                <Check fontSize='small' style={checkStyle} />
+                                <CheckIcon fontSize='small' style={checkStyle} />
                             </div>
                         }
                         {ChroamItem.isBullet(this.props.text) &&
@@ -246,7 +254,7 @@ class EditLineComponent extends React.Component {
                         }
                         {ChroamItem.isAccordion(this.props.text) &&
                             <div onClick={() => this.accordionClick()}>
-                                <ArrowRight fontSize='small' style={accordionStyle} />
+                                <ArrowRightIcon fontSize='small' style={accordionStyle} />
                             </div>
                         }
                         <div style={textStyle} onClick={(e) => this.onClick(e)}>

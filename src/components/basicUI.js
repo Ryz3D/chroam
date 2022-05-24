@@ -3,7 +3,9 @@ import * as mui from '@mui/material';
 import {
     Brightness3,
     Brightness7,
+    Delete as DeleteIcon,
     Forward as ForwardIcon,
+    Help as HelpIcon,
     MoreVert as MoreVertIcon,
     Radar as RadarIcon,
     Settings as SettingsIcon,
@@ -15,6 +17,7 @@ import routerNavigate from '../wrapper/routerNavigate';
 import ChroamDate from '../data/chroamDate';
 import Icons from '../data/icons';
 import logo192 from '../img/logo192.png';
+import HelpModalComponent from './helpPopover';
 
 class BasicUIComponent extends React.Component {
     constructor(props) {
@@ -22,6 +25,7 @@ class BasicUIComponent extends React.Component {
         this.state = {
             drawerOpen: false,
             menuAnchor: null,
+            showHelp: true,
         };
     }
 
@@ -77,27 +81,18 @@ class BasicUIComponent extends React.Component {
                         </mui.IconButton>
                         */}
                         <img src={logo192} alt='CHROAM logo' height={40} style={{ height: '40px' }} />
-                        <SearchBarComponent setPage={this.props.setPage} />
                         <mui.IconButton onClick={(e) => this.setState({ menuAnchor: e.currentTarget })}
-                            size='large' edge={showDaySwitcher ? false : 'end'}>
+                            size='large'>
                             <MoreVertIcon />
                         </mui.IconButton>
                         <mui.Menu anchorEl={this.state.menuAnchor}
                             open={this.state.menuAnchor !== null} onClose={() => this.closeMenu()}>
-                            <mui.MenuItem onClick={() => { this.props.setDark(this.props.theme.palette.mode !== 'dark'); this.closeMenu(); }}>
+                            <mui.MenuItem onClick={() => this.today()}>
                                 <mui.ListItemIcon>
-                                    {this.props.theme.palette.mode === 'dark' ?
-                                        <Brightness7 />
-                                        :
-                                        <Brightness3 />
-                                    }
+                                    <RadarIcon />
                                 </mui.ListItemIcon>
                                 <mui.ListItemText>
-                                    {this.props.theme.palette.mode === 'dark' ?
-                                        <>Light mode</>
-                                        :
-                                        <>Dark mode</>
-                                    }
+                                    Today's daily
                                 </mui.ListItemText>
                             </mui.MenuItem>
                             {!showDaySwitcher && this.props.onDaySwitch && [
@@ -118,14 +113,6 @@ class BasicUIComponent extends React.Component {
                                     </mui.ListItemText>
                                 </mui.MenuItem>
                             ]}
-                            <mui.MenuItem onClick={() => this.today()}>
-                                <mui.ListItemIcon>
-                                    <RadarIcon />
-                                </mui.ListItemIcon>
-                                <mui.ListItemText>
-                                    Today's daily
-                                </mui.ListItemText>
-                            </mui.MenuItem>
                             <mui.MenuItem onClick={() => this.props.navigate('/calendar')}>
                                 <mui.ListItemIcon>
                                     {Icons.create(Icons.daily.default)}
@@ -158,7 +145,42 @@ class BasicUIComponent extends React.Component {
                                     Settings
                                 </mui.ListItemText>
                             </mui.MenuItem>
+                            <mui.MenuItem onClick={() => { this.props.setDark(this.props.theme.palette.mode !== 'dark'); this.closeMenu(); }}>
+                                <mui.ListItemIcon>
+                                    {this.props.theme.palette.mode === 'dark' ?
+                                        <Brightness7 />
+                                        :
+                                        <Brightness3 />
+                                    }
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    {this.props.theme.palette.mode === 'dark' ?
+                                        <>Light mode</>
+                                        :
+                                        <>Dark mode</>
+                                    }
+                                </mui.ListItemText>
+                            </mui.MenuItem>
+                            <mui.MenuItem onClick={() => { this.setState({ showHelp: true }); this.closeMenu(); }}>
+                                <mui.ListItemIcon>
+                                    <HelpIcon />
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    Help
+                                </mui.ListItemText>
+                            </mui.MenuItem>
+                            <mui.MenuItem onClick={() => { console.log('DELET'); this.closeMenu(); }}>
+                                <mui.ListItemIcon>
+                                    <DeleteIcon color='error' />
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    <mui.Typography color='error'>
+                                        Delete this
+                                    </mui.Typography>
+                                </mui.ListItemText>
+                            </mui.MenuItem>
                         </mui.Menu>
+                        <SearchBarComponent setPage={this.props.setPage} />
                         {showDaySwitcher &&
                             <>
                                 <mui.Tooltip arrow title='Last daily'>
@@ -174,10 +196,11 @@ class BasicUIComponent extends React.Component {
                             </>
                         }
                     </mui.Toolbar>
-                </mui.AppBar >
+                </mui.AppBar>
                 <div style={rootStyle}>
                     {this.props.children}
                 </div>
+                <HelpModalComponent open={this.state.showHelp} onClose={() => this.setState({ showHelp: false })} />
             </div>
         );
     }

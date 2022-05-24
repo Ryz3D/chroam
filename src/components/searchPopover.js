@@ -7,7 +7,6 @@ import ChroamText from '../data/chroamText';
 import routerNavigate from '../wrapper/routerNavigate';
 
 // select results with arrow keys (pass event as prop)
-// "go to daily" if exists and remove 'new' prop
 
 class SearchPopoverComponent extends React.Component {
     constructor(props) {
@@ -38,11 +37,16 @@ class SearchPopoverComponent extends React.Component {
                 const res = {
                     title: e.name,
                     type: e.type,
+                    highlighted: e.highlighted,
                     score: 0,
                 };
                 if (e.type === 'topic') {
                     res.score += 0.5;
                 }
+                if (e.highlighted) {
+                    res.score += 0.8;
+                }
+
                 var allowed = false;
                 if (this.props.allowTopic && e.type === 'topic') {
                     allowed = true;
@@ -115,7 +119,8 @@ class SearchPopoverComponent extends React.Component {
         const mentionExists = ChroamData.hasName(this.props.query, 'mention');
 
         const dateTyped = ChroamDate.parseDate(this.props.query);
-        const dateExists = dateTyped === null ? false : (localStorage.getItem(ChroamDate.serializeDate(dateTyped)) !== null);
+        const dateData = dateTyped === null ? {} : JSON.parse(localStorage.getItem(ChroamDate.serializeDate(dateTyped)) || '{}');
+        const dateExists = (dateData.text || []).length > 0;
         const continueKey = this.state.searchResults.length;
 
         return (
@@ -152,7 +157,7 @@ class SearchPopoverComponent extends React.Component {
                         </SearchResultComponent>
                     }
                     {this.props.allowDaily &&
-                        <SearchResultComponent type='daily' new={!dateExists} disabled={dateTyped === null}
+                        <SearchResultComponent type='daily' new={!dateExists} disabled={dateTyped === null} highlighted={dateData.highlighted}
                             id={continueKey + 1} onClick={() => this.toDaily(dateTyped)}>
                             {dateTyped === null ?
                                 <>New Daily?</>

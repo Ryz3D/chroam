@@ -121,6 +121,7 @@ class DailyPage extends React.Component {
                     onLineChange={(i, t) => this.onLineChange(i, t)}
                     onNextLine={(i, cb, t) => this.onNextLine(i, cb, t)}
                     onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)} />
+                <div style={{ height: '2rem' }} />
             </BasicUIComponent>
         );
     }

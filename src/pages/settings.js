@@ -1,11 +1,15 @@
 import React from 'react';
+import * as mui from '@mui/material';
+import BasicUIComponent from '../components/basicUI';
 
 class SettingsPage extends React.Component {
     render() {
         return (
-            <div>
-                settings
-            </div>
+            <BasicUIComponent
+                setDark={this.props.setDark}
+                setPage={(u) => this.props.navigate(u)}>
+                <div>settings</div>
+            </BasicUIComponent>
         );
     }
 }

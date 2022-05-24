@@ -5,6 +5,7 @@ import BigHeaderComponent from './bigHeader';
 import ChroamData from '../data/chroamData';
 import ChroamDate from '../data/chroamDate';
 import { Link } from 'react-router-dom';
+import muiTheme from '../wrapper/muiTheme';
 
 // TODO: show topic name and date at right edge
 
@@ -32,10 +33,12 @@ class LinkListComponent extends React.Component {
     findLinks() {
         const topicResults = [];
         const dailyResults = [];
-        for (var entry of ChroamData.getEntries()) {
-            const location = entry.type === 'topic' ? entry.id : entry.name;
+        const entries = ChroamData.getEntries();
+        const dailies = entries.filter(p => p.type === 'daily').sort((a, b) => ChroamDate.deserializeDate(b.name).getTime() - ChroamDate.deserializeDate(a.name).getTime());
+        for (var entry of [...dailies, entries.filter(p => p.type !== 'daily')]) {
+            const location = entry.type === 'daily' ? entry.name : entry.id;
             const content = JSON.parse(localStorage.getItem(location) || '{"text": []}');
-            for (var i in content.text) {
+            for (var i = content.text.length - 1; i >= 0; i--) {
                 var found = false;
                 if (content.text[i].includes(this.props.entry.type === 'topic' ? `[[${this.props.entry.name}]]` : `#${this.props.entry.name} `)) {
                     found = true;
@@ -80,7 +83,8 @@ class LinkListComponent extends React.Component {
                     to={r.entry.type === 'topic' ? `/topic?i=${encodeURIComponent(r.entry.name)}` : `/?i=${r.entry.name}`}
                     style={{ textDecoration: 'none' }}>
                     <div style={linkStyle}>
-                        <mui.Badge badgeContent={'#' + r.lineN} color='primary'>
+                        <mui.Badge badgeContent={'#' + r.lineN} color='primary'
+                            sx={{ '& .MuiBadge-badge': { color: this.props.theme.palette.background.default } }}>
                             {r.entry.type === 'topic' ?
                                 `[[${r.entry.name}]]`
                                 :
@@ -113,4 +117,4 @@ class LinkListComponent extends React.Component {
     }
 }
 
-export default LinkListComponent;
+export default muiTheme(LinkListComponent);

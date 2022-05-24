@@ -5,9 +5,16 @@ import Icons from '../data/icons';
 class SearchResultComponent extends React.Component {
     render() {
         return (
-            <mui.ListItemButton id={`searchResult${this.props.id}`} disabled={this.props.disabled} onClick={this.props.onClick}>
+            <mui.ListItemButton id={`searchResult${this.props.id}`}
+                disabled={this.props.disabled}
+                onClick={this.props.onClick}>
                 {this.props.type &&
-                    Icons.create(Icons[this.props.type][this.props.new ? 'new' : 'default'], { startIcon: true })}
+                    Icons.create(Icons[this.props.type][this.props.new ? 'new' : 'default'], {
+                        startIcon: true,
+                        style: {
+                            color: this.props.highlighted ? '#ffa726' : '',
+                        },
+                    })}
                 {this.props.children}
             </mui.ListItemButton>
         );

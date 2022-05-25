@@ -4,7 +4,6 @@ import muiTheme from '../wrapper/muiTheme';
 import {
     ArrowRight as ArrowRightIcon,
     Check as CheckIcon,
-    Close as CloseIcon,
     HorizontalRule,
 } from '@mui/icons-material';
 import ChroamItem from '../data/chroamItem';
@@ -27,7 +26,9 @@ class EditLineComponent extends React.Component {
 
     inputUpdate(t, initial = false) {
         // NO WHITESPACE IN MENTION!
-        const matches = [...t.matchAll(/\[\[([^\]]*)$/g), ...t.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
+        const input = this.inputRef.current.getElementsByTagName('div')[0].getElementsByTagName('textarea')[0];
+        const cursorText = t.slice(0, input.selectionEnd);
+        const matches = [...cursorText.matchAll(/\[\[([^\]]*)$/g), ...cursorText.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
         if (matches.length > 0) {
             this.setState({
                 input: t,
@@ -99,6 +100,12 @@ class EditLineComponent extends React.Component {
                 event.preventDefault();
                 this.props.onEdit(1);
                 return false;
+            case 39: // arrow right
+                setTimeout(() => this.inputUpdate(this.state.input), 10);
+                break;
+            case 37: // arrow left
+                setTimeout(() => this.inputUpdate(this.state.input), 10);
+                break;
             default:
                 break;
         }
@@ -127,14 +134,18 @@ class EditLineComponent extends React.Component {
 
     fillResult(u) {
         const name = decodeURIComponent([...u.matchAll(/\?i=(.*)/g)][0][1]);
+        const input = this.inputRef.current.getElementsByTagName('div')[0].getElementsByTagName('textarea')[0];
+        const cursorText = this.props.text.slice(0, input.selectionEnd);
+        const restText = this.props.text.slice(input.selectionEnd);
+        const end = restText === '' ? ' ' : '';
         if (u.startsWith('/mention')) {
-            this.inputUpdate(this.props.text.replace(/#([äöüÄÖÜß_-\w]*)$/g, '').trimRight() + `#${name} `);
+            this.inputUpdate(cursorText.replace(/#([äöüÄÖÜß_-\w]*)$/g, '').trimRight() + ` #${name}${end}${restText}`);
             this.setState({
                 search: '',
             });
         }
         if (u.startsWith('/topic')) {
-            this.inputUpdate(this.props.text.replace(/\[\[([^\]]*)$/g, '').trimRight() + `[[${name}]] `);
+            this.inputUpdate(cursorText.replace(/\[\[([^\]]*)$/g, '').trimRight() + ` [[${name}]]${end}${restText}`);
             this.setState({
                 search: '',
             });

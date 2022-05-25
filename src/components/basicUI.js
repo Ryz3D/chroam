@@ -25,7 +25,7 @@ class BasicUIComponent extends React.Component {
         this.state = {
             drawerOpen: false,
             menuAnchor: null,
-            showHelp: true,
+            showHelp: false,
         };
     }
 

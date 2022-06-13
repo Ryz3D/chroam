@@ -119,7 +119,7 @@ class SearchPopoverComponent extends React.Component {
         const mentionExists = ChroamData.hasName(this.props.query, 'mention');
 
         const dateTyped = ChroamDate.parseDate(this.props.query);
-        const dateData = dateTyped === null ? {} : JSON.parse(localStorage.getItem(ChroamDate.serializeDate(dateTyped)) || '{}');
+        const dateData = dateTyped === null ? {} : ChroamData.getEntryByName(ChroamDate.serializeDate(dateTyped), 'daily') || {};
         const dateExists = (dateData.text || []).length > 0;
         const continueKey = this.state.searchResults.length;
 

@@ -29,8 +29,8 @@ class ChroamData {
         return entry.id;
     }
 
-    static addEntry(type, name) {
-        return this.setEntry({ type, name });
+    static addEntry(type, name, extras = {}) {
+        return this.setEntry({ type, name, ...extras });
     }
 
     static removeEntry(id) {
@@ -45,7 +45,7 @@ class ChroamData {
             return false;
         }
         else {
-            return this.addEntry('topic', name);
+            return this.addEntry('topic', name, { content: { text: [] } });
         }
     }
 
@@ -54,7 +54,7 @@ class ChroamData {
             return false;
         }
         else {
-            return this.addEntry('daily', name);
+            return this.addEntry('daily', name, { content: { text: [] } });
         }
     }
 

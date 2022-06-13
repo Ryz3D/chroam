@@ -4,10 +4,9 @@ import EditLineComponent from './editLine';
 import BigHeaderComponent from './bigHeader';
 import ChroamData from '../data/chroamData';
 import ChroamDate from '../data/chroamDate';
-import { Link } from 'react-router-dom';
 import muiTheme from '../wrapper/muiTheme';
-
-// TODO: show topic name and date at right edge
+import routerNavigate from '../wrapper/routerNavigate';
+import ChroamItem from '../data/chroamItem';
 
 class LinkListComponent extends React.Component {
     constructor(props) {
@@ -15,6 +14,8 @@ class LinkListComponent extends React.Component {
         this.state = {
             topicResults: [],
             dailyResults: [],
+            showTopicEmpty: false,
+            showDailyEmpty: false,
         };
         this.lastId = this.props.entry.id;
     }
@@ -35,24 +36,23 @@ class LinkListComponent extends React.Component {
         const dailyResults = [];
         const entries = ChroamData.getEntries();
         const dailies = entries.filter(p => p.type === 'daily').sort((a, b) => ChroamDate.deserializeDate(b.name).getTime() - ChroamDate.deserializeDate(a.name).getTime());
-        for (var entry of [...dailies, entries.filter(p => p.type !== 'daily')]) {
-            const location = entry.type === 'daily' ? entry.name : entry.id;
-            const content = JSON.parse(localStorage.getItem(location) || '{"text": []}');
-            for (var i = content.text.length - 1; i >= 0; i--) {
+        for (var entry of [...dailies, ...entries.filter(p => p.type !== 'daily')]) {
+            const text = (entry.content || { text: [] }).text;
+            for (var i = text.length - 1; i >= 0; i--) {
                 var found = false;
-                if (content.text[i].includes(this.props.entry.type === 'topic' ? `[[${this.props.entry.name}]]` : `#${this.props.entry.name} `)) {
+                if (text[i].includes(this.props.entry.type === 'topic' ? `[[${this.props.entry.name}]]` : `#${this.props.entry.name} `)) {
                     found = true;
                 }
-                else if (this.props.entry.type === 'mention' && content.text[i].endsWith(`#${this.props.entry.name}`)) {
+                else if (this.props.entry.type === 'mention' && text[i].endsWith(`#${this.props.entry.name}`)) {
                     found = true;
                 }
 
                 if (found) {
                     if (entry.type === 'topic') {
-                        topicResults.push({ entry, lineN: +i + 1, line: content.text[i] });
+                        topicResults.push({ entry, lineN: +i + 1, line: text[i] });
                     }
                     else if (entry.type === 'daily') {
-                        dailyResults.push({ entry, lineN: +i + 1, line: content.text[i] });
+                        dailyResults.push({ entry, lineN: +i + 1, line: text[i] });
                     }
                 }
             }
@@ -61,6 +61,11 @@ class LinkListComponent extends React.Component {
             topicResults,
             dailyResults,
         });
+    }
+
+    navigateToEntry(entry) {
+        this.props.navigate(entry.type === 'topic' ? `/topic?i=${encodeURIComponent(entry.name)}` : `/?i=${entry.name}`);
+        this.props.locationUpdate();
     }
 
     render() {
@@ -77,11 +82,12 @@ class LinkListComponent extends React.Component {
         const lineComponent = (r, i) => (
             <div style={lineStyle} key={i}>
                 <div>
-                    <EditLineComponent text={r.line} disabled />
+                    <EditLineComponent
+                        text={r.line} disabled
+                        locationUpdate={this.props.locationUpdate} />
                 </div>
-                <Link
-                    to={r.entry.type === 'topic' ? `/topic?i=${encodeURIComponent(r.entry.name)}` : `/?i=${r.entry.name}`}
-                    style={{ textDecoration: 'none' }}>
+                <div style={{ cursor: 'pointer' }}
+                    onClick={() => this.navigateToEntry(r.entry)}>
                     <div style={linkStyle}>
                         <mui.Badge badgeContent={'#' + r.lineN} color='primary'
                             sx={{ '& .MuiBadge-badge': { color: this.props.theme.palette.background.default } }}>
@@ -92,9 +98,17 @@ class LinkListComponent extends React.Component {
                             }
                         </mui.Badge>
                     </div>
-                </Link>
+                </div>
             </div>
         );
+
+        const isEmptyLink = (t) => {
+            t = t.replace(ChroamItem.bulletMatch, '');
+            t = t.replace(ChroamItem.accordionMatch, '');
+            t = t.replace(ChroamItem.checkedCheckboxMatch, '');
+            t = t.replace(ChroamItem.uncheckedCheckboxMatch, '');
+            return t.trim() === (this.props.entry.type === 'topic' ? `[[${this.props.entry.name}]]` : `#${this.props.entry.name}`);
+        }
 
         return (
             <div>
@@ -102,14 +116,18 @@ class LinkListComponent extends React.Component {
                     <>
                         <div style={{ height: '2rem' }} />
                         <BigHeaderComponent smaller header='Links from Topics' />
-                        {this.state.topicResults.map(lineComponent)}
+                        <mui.FormControlLabel label='Show empty Links' style={{ userSelect: 'none' }}
+                            control={<mui.Checkbox checked={this.state.showTopicEmpty} onChange={(e, value) => this.setState({ showTopicEmpty: value })} />} />
+                        {this.state.topicResults.map((r, i) => !isEmptyLink(r.line) || this.state.showTopicEmpty ? lineComponent(r, i) : false)}
                     </>
                 }
                 {this.state.dailyResults.length > 0 &&
                     <>
                         <div style={{ height: '2rem' }} />
                         <BigHeaderComponent smaller header='Links from Dailys' />
-                        {this.state.dailyResults.map(lineComponent)}
+                        <mui.FormControlLabel label='Show empty Links' style={{ userSelect: 'none' }}
+                            control={<mui.Checkbox checked={this.state.showDailyEmpty} onChange={(e, value) => this.setState({ showDailyEmpty: value })} />} />
+                        {this.state.dailyResults.map((r, i) => !isEmptyLink(r.line) || this.state.showDailyEmpty ? lineComponent(r, i) : false)}
                     </>
                 }
             </div>
@@ -117,4 +135,4 @@ class LinkListComponent extends React.Component {
     }
 }
 
-export default muiTheme(LinkListComponent);
+export default routerNavigate(muiTheme(LinkListComponent));

@@ -52,7 +52,9 @@ class MentionPage extends React.Component {
                     </>
                 } />
                 <br />
-                <LinkListComponent entry={this.state.entry} />
+                <LinkListComponent
+                    entry={this.state.entry}
+                    locationUpdate={() => this.locationUpdate()} />
                 <div style={{ height: '2rem' }} />
             </BasicUIComponent>
         );

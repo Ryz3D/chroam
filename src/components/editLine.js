@@ -8,8 +8,8 @@ import {
 } from '@mui/icons-material';
 import ChroamItem from '../data/chroamItem';
 import SearchPopoverComponent from './searchPopover';
-import { Link } from 'react-router-dom';
 import { teal } from '@mui/material/colors';
+import routerNavigate from '../wrapper/routerNavigate';
 
 class EditLineComponent extends React.Component {
     constructor(props) {
@@ -26,8 +26,9 @@ class EditLineComponent extends React.Component {
 
     inputUpdate(t, initial = false) {
         // NO WHITESPACE IN MENTION!
-        const input = this.inputRef.current.getElementsByTagName('div')[0].getElementsByTagName('textarea')[0];
-        const cursorText = t.slice(0, input.selectionEnd);
+        const inputParent = this.inputRef.current;
+        const input = inputParent ? inputParent.getElementsByTagName('div')[0].getElementsByTagName('textarea')[0] : null;
+        const cursorText = input ? t.slice(0, input.selectionEnd) : t;
         const matches = [...cursorText.matchAll(/\[\[([^\]]*)$/g), ...cursorText.matchAll(/#([äöüÄÖÜß_-\w]*)$/g)];
         if (matches.length > 0) {
             this.setState({
@@ -42,7 +43,7 @@ class EditLineComponent extends React.Component {
                 search: '',
             });
         }
-        if (t || !initial) {
+        if ((t || !initial) && this.props.onLineChange) {
             this.props.onLineChange(t);
         }
     }
@@ -57,7 +58,7 @@ class EditLineComponent extends React.Component {
     }
 
     onClick(event) {
-        if (!event.target.id.startsWith('chroamref') && !this.props.disabled) {
+        if (!(event.target.parentNode || { id: '' }).id.startsWith('chroamref') && !this.props.disabled) {
             console.log(`set cursor based on ${event.clientX} and ${event.clientY}`);
             this.props.onEdit(true);
         }
@@ -167,12 +168,18 @@ class EditLineComponent extends React.Component {
         const refCompStyle = {
             ...textCompStyle,
             color: teal.A700,
+            cursor: 'pointer',
         };
         for (var i in matches) {
             const m = matches[i];
             const isTopic = m[0].startsWith('[[');
             textComponents.push(<div key={i * 2} style={textCompStyle}>{text.slice(index, m.index)}</div>);
-            textComponents.push(<Link key={i * 2 + 1} style={refCompStyle} id={`chroamref${i}`} to={isTopic ? `/topic?i=${encodeURIComponent(m[1])}` : `/mention?i=${encodeURIComponent(m[1])}`}>{m[0]}</Link>);
+            textComponents.push(<div key={i * 2 + 1} style={refCompStyle} id={`chroamref${i}`} onClick={(e) => {
+                e.preventDefault();
+                this.props.navigate(isTopic ? `/topic?i=${encodeURIComponent(m[1])}` : `/mention?i=${encodeURIComponent(m[1])}`);
+                this.props.locationUpdate();
+                return false;
+            }}><u>{m[0]}</u></div>);
             index = m.index + m[0].length;
         }
         textComponents.push(<div key={matches.length * 2} style={textCompStyle}>{text.slice(index)}</div>);
@@ -235,19 +242,12 @@ class EditLineComponent extends React.Component {
         return (
             <div style={rootStyle}>
                 {this.props.edit ?
-                    /*
-                    <div>
-                        <mui.IconButton style={{ position: 'absolute', left: '-40px', top: '-7px', zIndex: 100 }}>
-                            <CloseIcon />
-                        </mui.IconButton>
-                    */
                     <mui.TextField ref={this.inputRef}
                         InputProps={{ style: { padding: '4px 8px' } }}
                         multiline variant='outlined' style={inputStyle}
                         autoFocus onBlur={(e) => this.inputBlur(e)}
                         value={this.props.text} onChange={(e) => this.onLineChange(e)}
                         onKeyDown={(e) => this.onKeyDown(e)} />
-                    /*</div>*/
                     :
                     <div style={boxStyle}>
                         {ChroamItem.isUncheckedCheckbox(this.props.text) &&
@@ -288,4 +288,4 @@ class EditLineComponent extends React.Component {
     }
 }
 
-export default muiTheme(EditLineComponent);
+export default routerNavigate(muiTheme(EditLineComponent));

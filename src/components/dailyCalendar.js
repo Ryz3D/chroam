@@ -2,6 +2,8 @@ import React from 'react';
 import * as mui from '@mui/material';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material';
 import ChroamDate from '../data/chroamDate';
+import ChroamData from '../data/chroamData';
+import muiTheme from '../wrapper/muiTheme';
 
 class DailyCalendarComponent extends React.Component {
     constructor(props) {
@@ -14,16 +16,15 @@ class DailyCalendarComponent extends React.Component {
 
     getDaily(day) {
         const date = new Date(this.state.year, this.state.month, day + 1);
-        const item = localStorage.getItem(ChroamDate.serializeDate(date));
-        return JSON.parse(item || '{}');
+        return ChroamData.getEntryByName(ChroamDate.serializeDate(date)) || {};
     }
 
     hasDaily(day) {
-        return (this.getDaily(day).text || []).length > 0;
+        return (this.getDaily(day).content || { text: [] }).text.length > 0;
     }
 
     isLit(day) {
-        return this.getDaily(day).highlighted || false;
+        return (this.getDaily(day).content || { highlighted: false }).highlighted;
     }
 
     toDaily(day) {
@@ -84,7 +85,7 @@ class DailyCalendarComponent extends React.Component {
         const itemStyle = {
             minWidth: '0',
             borderRadius: '15px',
-            textShadow: '0 0 2.5px #000',
+            textShadow: this.props.theme.palette.mode === 'dark' ? '0 0 3px #aaa5' : '0 0 2.5px #0005',
             boxShadow: '0 0 8px #0004',
         };
 
@@ -126,4 +127,4 @@ class DailyCalendarComponent extends React.Component {
     }
 }
 
-export default DailyCalendarComponent;
+export default muiTheme(DailyCalendarComponent);

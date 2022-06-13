@@ -7,6 +7,7 @@ import Icons from '../data/icons';
 import ChroamDate from '../data/chroamDate';
 import EditableTextComponent from '../components/editableText';
 import ChroamData from '../data/chroamData';
+import muiTheme from '../wrapper/muiTheme';
 
 class DailyPage extends React.Component {
     constructor(props) {
@@ -32,7 +33,7 @@ class DailyPage extends React.Component {
         const urlDate = ChroamDate.deserializeDate(urlSearch.get('i') || '');
         this.date = urlDate || new Date();
         this.setState({
-            content: JSON.parse(localStorage.getItem(ChroamDate.serializeDate(this.date)) || '{"text":[],"highlighted":false}'),
+            content: (ChroamData.getEntryByName(ChroamDate.serializeDate(this.date), 'daily') || { content: { text: [], highlighted: false } }).content,
         });
     }
 
@@ -51,8 +52,9 @@ class DailyPage extends React.Component {
     }
 
     saveContent() {
-        ChroamData.newDaily(ChroamDate.serializeDate(this.date));
-        localStorage.setItem(ChroamDate.serializeDate(this.date), JSON.stringify(this.state.content));
+        const name = ChroamDate.serializeDate(this.date);
+        const id = (ChroamData.getEntryByName(name, 'daily') || {}).id;
+        ChroamData.setEntry({ type: 'daily', id, name, content: this.state.content });
     }
 
     onLineChange(index, text) {
@@ -88,7 +90,13 @@ class DailyPage extends React.Component {
         }, () => { this.saveContent(); cb(); });
     }
 
+    isToday() {
+        return this.date.toDateString() === new Date().toDateString();
+    }
+
     render() {
+        const today = this.isToday();
+
         return (
             <BasicUIComponent
                 setDark={this.props.setDark}
@@ -112,19 +120,32 @@ class DailyPage extends React.Component {
                     }
                     subheader={
                         <>
-                            {Icons.create(Icons.daily.default, { secondary: true, style: { position: 'relative', top: '5.5px' } })}
-                            <div style={{ display: 'inline' }}>Daily</div>
+                            {Icons.create(Icons.daily.default, {
+                                secondary: true,
+                                style: {
+                                    position: 'relative',
+                                    top: '5.5px',
+                                    color: today ? this.props.theme.palette.secondary.main : undefined,
+                                },
+                            })}
+                            <div style={{
+                                display: 'inline',
+                                color: today ? this.props.theme.palette.secondary.main : undefined,
+                            }}>
+                                {today ? <>Today's Daily</> : <>Daily</>}
+                            </div>
                         </>
                     } />
                 <EditableTextComponent
                     content={this.state.content}
                     onLineChange={(i, t) => this.onLineChange(i, t)}
                     onNextLine={(i, cb, t) => this.onNextLine(i, cb, t)}
-                    onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)} />
+                    onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)}
+                    locationUpdate={() => this.locationUpdate()} />
                 <div style={{ height: '2rem' }} />
             </BasicUIComponent>
         );
     }
 }
 
-export default routerNavigate(DailyPage);
+export default routerNavigate(muiTheme(DailyPage));

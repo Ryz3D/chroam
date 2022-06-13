@@ -7,7 +7,6 @@ import {
     Forward as ForwardIcon,
     Help as HelpIcon,
     MoreVert as MoreVertIcon,
-    Radar as RadarIcon,
     Settings as SettingsIcon,
 } from '@mui/icons-material';
 import SearchBarComponent from './searchBar';
@@ -80,21 +79,17 @@ class BasicUIComponent extends React.Component {
                             <MenuIcon />
                         </mui.IconButton>
                         */}
-                        <img src={logo192} alt='CHROAM logo' height={40} style={{ height: '40px' }} />
+                        <mui.Tooltip arrow title={'Today\'s daily'}>
+                            <mui.IconButton onClick={() => this.today()}>
+                                <img src={logo192} alt='CHROAM logo' height={40} style={{ height: '40px' }} />
+                            </mui.IconButton>
+                        </mui.Tooltip>
                         <mui.IconButton onClick={(e) => this.setState({ menuAnchor: e.currentTarget })}
                             size='large'>
                             <MoreVertIcon />
                         </mui.IconButton>
                         <mui.Menu anchorEl={this.state.menuAnchor}
                             open={this.state.menuAnchor !== null} onClose={() => this.closeMenu()}>
-                            <mui.MenuItem onClick={() => this.today()}>
-                                <mui.ListItemIcon>
-                                    <RadarIcon />
-                                </mui.ListItemIcon>
-                                <mui.ListItemText>
-                                    Today's daily
-                                </mui.ListItemText>
-                            </mui.MenuItem>
                             {!showDaySwitcher && this.props.onDaySwitch && [
                                 <mui.MenuItem key={0} onClick={() => { this.props.onDaySwitch(false); this.closeMenu(); }}>
                                     <mui.ListItemIcon>

@@ -15,9 +15,9 @@ class TopicPage extends React.Component {
             entry: {
                 id: undefined,
                 name: '',
-            },
-            content: {
-                text: [],
+                content: {
+                    text: [],
+                },
             },
         };
     }
@@ -39,19 +39,16 @@ class TopicPage extends React.Component {
             id = ChroamData.newTopic(name);
         }
         this.setState({
-            entry: ChroamData.getEntryById(id),
-            content: JSON.parse(localStorage.getItem(id)) || {
-                text: [],
-            },
+            entry: ChroamData.getEntryById(id) || { content: { text: [] } },
         });
     }
 
     saveContent() {
-        localStorage.setItem(this.state.entry.id, JSON.stringify(this.state.content));
+        ChroamData.setEntry(this.state.entry);
     }
 
     onLineChange(index, text) {
-        const content = JSON.parse(JSON.stringify(this.state.content));
+        const content = JSON.parse(JSON.stringify(this.state.entry.content));
         if (index === content.length) {
             content.text.push(text);
         }
@@ -59,27 +56,27 @@ class TopicPage extends React.Component {
             content.text[index] = text;
         }
         this.setState({
-            content,
+            entry: { ...this.state.entry, content },
         }, () => this.saveContent());
     }
 
     onNextLine(index, cb = () => { }, t = '') {
-        const content = JSON.parse(JSON.stringify(this.state.content));
+        const content = JSON.parse(JSON.stringify(this.state.entry.content));
         content.text = [
             ...content.text.slice(0, index + 1),
             t,
             ...content.text.slice(index + 1),
         ];
         this.setState({
-            content,
+            entry: { ...this.state.entry, content },
         }, () => { this.saveContent(); cb(); });
     }
 
     onDeleteLine(index, cb = () => { }) {
-        const content = JSON.parse(JSON.stringify(this.state.content));
+        const content = JSON.parse(JSON.stringify(this.state.entry.content));
         content.text.splice(index, 1);
         this.setState({
-            content,
+            entry: { ...this.state.entry, content },
         }, () => { this.saveContent(); cb(); });
     }
 
@@ -95,12 +92,15 @@ class TopicPage extends React.Component {
                     </>
                 } />
                 <EditableTextComponent
-                    content={this.state.content}
+                    content={this.state.entry.content}
                     onLineChange={(i, t) => this.onLineChange(i, t)}
                     onNextLine={(i, cb, t) => this.onNextLine(i, cb, t)}
-                    onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)} />
+                    onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)}
+                    locationUpdate={() => this.locationUpdate()} />
                 <div style={{ height: '2rem' }} />
-                <LinkListComponent entry={this.state.entry} />
+                <LinkListComponent
+                    entry={this.state.entry}
+                    locationUpdate={() => this.locationUpdate()} />
                 <div style={{ height: '2rem' }} />
             </BasicUIComponent>
         );

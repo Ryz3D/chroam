@@ -5,9 +5,9 @@ import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
-import { isIOS } from 'react-device-detect';
+// import { CSSTransition, TransitionGroup } from 'react-transition-group';
+// import { isIOS } from 'react-device-detect';
 import { initializeApp } from 'firebase/app';
 
 import DailyPage from './pages/daily';
@@ -62,6 +62,7 @@ function SimpleRoute(props) {
   );
 }
 
+/*
 function AnimationRoute(props) {
   const location = useLocation();
 
@@ -78,6 +79,7 @@ function AnimationRoute(props) {
     </TransitionGroup>
   );
 }
+*/
 
 class App extends React.Component {
   constructor(props) {

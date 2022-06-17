@@ -16,7 +16,7 @@ import routerNavigate from '../wrapper/routerNavigate';
 import ChroamDate from '../data/chroamDate';
 import Icons from '../data/icons';
 import logo192 from '../img/logo192.png';
-import HelpModalComponent from './helpPopover';
+import HelpModalComponent from './helpModal';
 
 class BasicUIComponent extends React.Component {
     constructor(props) {

@@ -5,6 +5,13 @@ import ChroamData from '../data/chroamData';
 import routerNavigate from '../wrapper/routerNavigate';
 
 class TopicsPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            entries: ChroamData.getEntries(),
+        };
+    }
+
     render() {
         const rootStyle = {
             width: '100%',
@@ -18,7 +25,7 @@ class TopicsPage extends React.Component {
                 setDark={this.props.setDark}
                 setPage={(u) => this.props.navigate(u)}>
                 <div style={rootStyle}>
-                    {ChroamData.getEntries().filter(p => p.type === 'topic').map((e, i) =>
+                    {this.state.entries.filter(p => p.type === 'topic').map((e, i) =>
                         <p key={i}>
                             <Link to={`/topic?i=${encodeURIComponent(e.name)}`}>
                                 - {e.name}

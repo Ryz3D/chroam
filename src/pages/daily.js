@@ -28,12 +28,12 @@ class DailyPage extends React.Component {
         this.locationUpdate();
     }
 
-    locationUpdate() {
+    async locationUpdate() {
         const urlSearch = new URLSearchParams(window.location.search);
         const urlDate = ChroamDate.deserializeDate(urlSearch.get('i') || '');
         this.date = urlDate || new Date();
         this.setState({
-            content: (ChroamData.getEntryByName(ChroamDate.serializeDate(this.date), 'daily') || { content: { text: [], highlighted: false } }).content,
+            content: ((await ChroamData.getEntryByName(ChroamDate.serializeDate(this.date), 'daily')) || { content: { text: [], highlighted: false } }).content,
         });
     }
 
@@ -51,10 +51,10 @@ class DailyPage extends React.Component {
         }
     }
 
-    saveContent() {
+    async saveContent() {
         const name = ChroamDate.serializeDate(this.date);
-        const id = (ChroamData.getEntryByName(name, 'daily') || {}).id;
-        ChroamData.setEntry({ type: 'daily', id, name, content: this.state.content });
+        const id = ((await ChroamData.getEntryByName(name, 'daily')) || {}).id;
+        await ChroamData.setEntry({ type: 'daily', id, name, content: this.state.content });
     }
 
     onLineChange(index, text) {

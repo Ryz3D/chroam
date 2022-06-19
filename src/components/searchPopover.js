@@ -20,10 +20,21 @@ class SearchPopoverComponent extends React.Component {
         this.state = {
             searchResults: this.recommendations,
             recommending: true,
+            topicExists: false,
+            mentionExists: false,
+            dateTyped: null,
+            dateData: {},
         };
     }
 
-    doSearch() {
+    async doSearch() {
+        const dateTyped = ChroamDate.parseDate(this.props.query);
+        this.setState({
+            topicExists: await ChroamData.hasName(this.props.query, 'topic'),
+            mentionExists: await ChroamData.hasName(this.props.query, 'mention'),
+            dateTyped,
+            dateData: dateTyped === null ? {} : (await ChroamData.getEntryByName(ChroamDate.serializeDate(dateTyped), 'daily')) || {},
+        });
         if (this.props.query.trim() === '') {
             this.setState({
                 searchResults: this.recommendations,
@@ -33,7 +44,7 @@ class SearchPopoverComponent extends React.Component {
         else {
             const results = [];
 
-            for (var e of ChroamData.getEntries()) {
+            for (var e of await ChroamData.getEntries()) {
                 const res = {
                     title: e.name,
                     type: e.type,
@@ -115,11 +126,8 @@ class SearchPopoverComponent extends React.Component {
     }
 
     render() {
-        const topicExists = ChroamData.hasName(this.props.query, 'topic');
-        const mentionExists = ChroamData.hasName(this.props.query, 'mention');
+        const { topicExists, mentionExists, dateTyped, dateData } = this.state;
 
-        const dateTyped = ChroamDate.parseDate(this.props.query);
-        const dateData = dateTyped === null ? {} : ChroamData.getEntryByName(ChroamDate.serializeDate(dateTyped), 'daily') || {};
         const dateExists = (dateData.text || []).length > 0;
         const continueKey = this.state.searchResults.length;
 

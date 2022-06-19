@@ -31,10 +31,10 @@ class LinkListComponent extends React.Component {
         }
     }
 
-    findLinks() {
+    async findLinks() {
         const topicResults = [];
         const dailyResults = [];
-        const entries = ChroamData.getEntries();
+        const entries = await ChroamData.getEntries();
         const dailies = entries.filter(p => p.type === 'daily').sort((a, b) => ChroamDate.deserializeDate(b.name).getTime() - ChroamDate.deserializeDate(a.name).getTime());
         for (var entry of [...dailies, ...entries.filter(p => p.type !== 'daily')]) {
             const text = (entry.content || { text: [] }).text;

@@ -8,7 +8,7 @@ import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-route
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 // import { CSSTransition, TransitionGroup } from 'react-transition-group';
 // import { isIOS } from 'react-device-detect';
-import { initializeApp } from 'firebase/app';
+import Parse from 'parse/dist/parse.min.js';
 
 import DailyPage from './pages/daily';
 import CalendarPage from './pages/calendar';
@@ -41,16 +41,8 @@ TODO:
 
 */
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDYrPLeDpZj_KqPC-r5S_Lt0C-cd_96EXA",
-  authDomain: "chroam-26063.firebaseapp.com",
-  projectId: "chroam-26063",
-  storageBucket: "chroam-26063.appspot.com",
-  messagingSenderId: "515202351677",
-  appId: "1:515202351677:web:fb6f2e67e0e81533416054"
-};
-
-initializeApp(firebaseConfig);
+Parse.initialize('UFEdpP8t3rVz2pEESDzfPoCtpy24pmi8xl4OIufw', 'JNugHR2crlrApN3moh5SBS6mOH5FhpY8vBEwoInX');
+Parse.serverURL = 'https://parseapi.back4app.com/';
 
 function SimpleRoute(props) {
   const location = useLocation();

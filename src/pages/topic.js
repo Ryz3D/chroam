@@ -31,20 +31,20 @@ class TopicPage extends React.Component {
         this.locationUpdate();
     }
 
-    locationUpdate() {
+    async locationUpdate() {
         const urlSearch = new URLSearchParams(window.location.search);
         const name = urlSearch.get('i') || '';
-        var id = (ChroamData.getEntryByName(name, 'topic') || {}).id;
+        var id = ((await ChroamData.getEntryByName(name, 'topic')) || {}).id;
         if (id === undefined) {
-            id = ChroamData.newTopic(name);
+            id = await ChroamData.newTopic(name);
         }
         this.setState({
-            entry: ChroamData.getEntryById(id) || { content: { text: [] } },
+            entry: (await ChroamData.getEntryById(id)) || { content: { text: [] } },
         });
     }
 
-    saveContent() {
-        ChroamData.setEntry(this.state.entry);
+    async saveContent() {
+        await ChroamData.setEntry(this.state.entry);
     }
 
     onLineChange(index, text) {

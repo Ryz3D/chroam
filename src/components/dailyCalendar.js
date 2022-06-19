@@ -14,9 +14,9 @@ class DailyCalendarComponent extends React.Component {
         };
     }
 
-    getDaily(day) {
+    async getDaily(day) {
         const date = new Date(this.state.year, this.state.month, day + 1);
-        return ChroamData.getEntryByName(ChroamDate.serializeDate(date), 'daily') || {};
+        return await ChroamData.getEntryByName(ChroamDate.serializeDate(date), 'daily') || {};
     }
 
     hasDaily(day) {

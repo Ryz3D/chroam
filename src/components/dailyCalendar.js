@@ -11,7 +11,14 @@ class DailyCalendarComponent extends React.Component {
         this.state = {
             year: new Date().getFullYear(),
             month: new Date().getMonth(),
+            days: 0,
+            hasDaily: [],
+            isLit: [],
         };
+    }
+
+    componentDidMount() {
+        this.updateDays();
     }
 
     getDaily(day) {
@@ -47,17 +54,32 @@ class DailyCalendarComponent extends React.Component {
         this.props.setPage(`/?i=${ChroamDate.serializeDate(date)}`);
     }
 
+    async updateDays() {
+        const days = new Date(this.state.year, this.state.month + 1, 0).getDate();
+        const hasDaily = [];
+        const isLit = [];
+        for (var i = 0; i < days; i++) {
+            hasDaily.push(await this.hasDaily(i));
+            isLit.push(await this.isLit(i));
+        }
+        this.setState({
+            days,
+            hasDaily,
+            isLit,
+        });
+    }
+
     prevMonth() {
         if (this.state.month > 0) {
             this.setState({
                 month: this.state.month - 1,
-            });
+            }, () => this.updateDays());
         }
         else {
             this.setState({
                 year: this.state.year - 1,
                 month: 11,
-            });
+            }, () => this.updateDays());
         }
     }
 
@@ -65,13 +87,13 @@ class DailyCalendarComponent extends React.Component {
         if (this.state.month < 11) {
             this.setState({
                 month: this.state.month + 1,
-            });
+            }, () => this.updateDays());
         }
         else {
             this.setState({
                 year: this.state.year + 1,
                 month: 0,
-            });
+            }, () => this.updateDays());
         }
     }
 
@@ -128,8 +150,8 @@ class DailyCalendarComponent extends React.Component {
                         new Array(days).fill(0).map((_, i) =>
                             <mui.Button
                                 key={i}
-                                style={{ ...itemStyle, color: this.isLit(i) ? '#ff0' : undefined, zIndex: 10 + i }}
-                                variant={i === today && currentMonth ? 'contained' : (this.hasDaily(i) ? 'outlined' : 'text')}
+                                style={{ ...itemStyle, color: this.state.isLit[i] ? '#ff0' : undefined, zIndex: 10 + i }}
+                                variant={i === today && currentMonth ? 'contained' : (this.state.hasDaily[i] ? 'outlined' : 'text')}
                                 color={(i + weekdayOffset + 6) % 7 > 4 ? 'secondary' : 'primary'}
                                 onClick={() => this.openDaily(i)}>
                                 {i + 1}

@@ -19,13 +19,17 @@ class ChroamData {
         }
     }
 
-    static getEntries() {
+    static getEntries(type = undefined) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                resolve(JSON.parse(localStorage.getItem('chroamData') || '[]'));
+                resolve(JSON.parse(localStorage.getItem('chroamData') || '[]').filter(p => (p.type === type || type === undefined)));
             }
             else {
-                new Parse.Query('entry').equalTo('user', ChroamData.user.id).find()
+                const q = new Parse.Query('entry').equalTo('user', ChroamData.user.id);
+                if (type !== undefined) {
+                    q.equalTo('type', type);
+                }
+                q.find()
                     .then(res => {
                         resolve(res.map(ChroamData.readDBEntry));
                     });
@@ -63,8 +67,8 @@ class ChroamData {
     static hasName(name, type = undefined) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                ChroamData.getEntries()
-                    .then(e => resolve(e.findIndex(p => p.name === name && (type === undefined || p.type === type)) !== -1));
+                ChroamData.getEntries(type)
+                    .then(e => resolve(e.findIndex(p => p.name === name) !== -1));
             }
             else {
                 new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('name', name).find()
@@ -97,8 +101,8 @@ class ChroamData {
     static getEntryById(id, type = undefined) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                ChroamData.getEntries()
-                    .then(e => resolve(e.find(p => p.id === id && (type === undefined || p.type === type))));
+                ChroamData.getEntries(type)
+                    .then(e => resolve(e.find(p => p.id === id)));
             }
             else {
                 const q = new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('objectId', id);
@@ -156,8 +160,11 @@ class ChroamData {
     static removeEntry(id) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                ChroamData.setEntries(ChroamData.getEntries().filter(p => p.id !== id))
-                    .then(() => resolve());
+                ChroamData.getEntries()
+                    .then(entries => {
+                        ChroamData.setEntries(entries.filter(p => p.id !== id))
+                            .then(() => resolve());
+                    });
             }
             else {
                 new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('objectId', id).find()

@@ -8,8 +8,15 @@ class TopicsPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            entries: ChroamData.getEntries(),
+            entries: [],
         };
+    }
+
+    componentDidMount() {
+        ChroamData.getEntries('topic')
+            .then(entries => this.setState({
+                entries,
+            }));
     }
 
     render() {
@@ -25,7 +32,7 @@ class TopicsPage extends React.Component {
                 setDark={this.props.setDark}
                 setPage={(u) => this.props.navigate(u)}>
                 <div style={rootStyle}>
-                    {this.state.entries.filter(p => p.type === 'topic').map((e, i) =>
+                    {this.state.entries.map((e, i) =>
                         <p key={i}>
                             <Link to={`/topic?i=${encodeURIComponent(e.name)}`}>
                                 - {e.name}

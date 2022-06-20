@@ -34,9 +34,9 @@ class LinkListComponent extends React.Component {
     async findLinks() {
         const topicResults = [];
         const dailyResults = [];
-        const entries = await ChroamData.getEntries();
-        const dailies = entries.filter(p => p.type === 'daily').sort((a, b) => ChroamDate.deserializeDate(b.name).getTime() - ChroamDate.deserializeDate(a.name).getTime());
-        for (var entry of [...dailies, ...entries.filter(p => p.type !== 'daily')]) {
+        const dailies = (await ChroamData.getEntries('daily')).sort((a, b) => ChroamDate.deserializeDate(b.name).getTime() - ChroamDate.deserializeDate(a.name).getTime());
+        const topics = await ChroamData.getEntries('topic');
+        for (var entry of [...dailies, ...topics]) {
             const text = (entry.content || { text: [] }).text;
             for (var i = text.length - 1; i >= 0; i--) {
                 var found = false;

@@ -8,8 +8,15 @@ class MentionsPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            entries: ChroamData.getEntries(),
+            entries: [],
         };
+    }
+
+    componentDidMount() {
+        ChroamData.getEntries('mention')
+            .then(entries => this.setState({
+                entries,
+            }));
     }
 
     render() {
@@ -25,7 +32,7 @@ class MentionsPage extends React.Component {
                 setDark={this.props.setDark}
                 setPage={(u) => this.props.navigate(u)}>
                 <div style={rootStyle}>
-                    {this.state.entries.filter(p => p.type === 'mention').map((e, i) =>
+                    {this.state.entries.map((e, i) =>
                         <p key={i}>
                             <Link to={`/mention?i=${encodeURIComponent(e.name)}`}>
                                 - {e.name}

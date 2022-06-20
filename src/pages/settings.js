@@ -18,9 +18,10 @@ class SettingsPage extends React.Component {
             topicNew: 0,
             confirmImportOpen: false,
             online: !ChroamData.local,
-            parseHost: localStorage.getItem('parseHost'),
-            parseId: localStorage.getItem('parseId'),
-            parseKey: localStorage.getItem('parseKey'),
+            parseHost: localStorage.getItem('parseHost') || '',
+            parseId: localStorage.getItem('parseId') || '',
+            parseKey: localStorage.getItem('parseKey') || '',
+            importLoading: false,
         };
         this.downloadRef = React.createRef();
         this.fileRef = React.createRef();
@@ -74,13 +75,20 @@ class SettingsPage extends React.Component {
     }
 
     async importOverwrite() {
+        this.setState({
+            importLoading: true,
+        });
         await ChroamData.setEntries(this.state.newChroamData);
         this.setState({
             confirmImportOpen: false,
+            importLoading: false,
         });
     }
 
     async importAppend() {
+        this.setState({
+            importLoading: true,
+        });
         var newData = await ChroamData.getEntries();
         for (var e of this.state.newChroamData) {
             const iId = e.id;
@@ -107,6 +115,7 @@ class SettingsPage extends React.Component {
         await ChroamData.setEntries(newData);
         this.setState({
             confirmImportOpen: false,
+            importLoading: false,
         });
     }
 
@@ -153,11 +162,15 @@ class SettingsPage extends React.Component {
                             JSON Import
                         </mui.Button>
                     </mui.ButtonGroup>
+                    <mui.Input fullWidth placeholder='Parse Host' value={this.state.parseHost} onChange={(e) => this.onPHostChange(e)} />
+                    <br />
+                    <mui.Input fullWidth placeholder='Parse Id' value={this.state.parseId} onChange={(e) => this.onPIdChange(e)} />
+                    <br />
+                    <mui.Input fullWidth placeholder='Parse Key' value={this.state.parseKey} onChange={(e) => this.onPKeyChange(e)} />
+                    <br />
                     <mui.FormControlLabel control={<mui.Checkbox checked={this.state.online} onChange={(e, checked) => this.onOnlineChange(checked)} />} label='Enable Database' />
-                    <mui.Input title='Parse Host' value={this.state.parseHost} onChange={(e) => this.onPHostChange(e)} />
-                    <mui.Input title='Parse Id' value={this.state.parseHost} onChange={(e) => this.onPIdChange(e)} />
-                    <mui.Input title='Parse Key' value={this.state.parseHost} onChange={(e) => this.onPKeyChange(e)} />
-                    <mui.Modal open={this.state.confirmImportOpen} onClose={() => this.setState({ confirmImportOpen: false })}
+                    <mui.Modal open={this.state.confirmImportOpen}
+                        onClose={() => { if (!this.state.importLoading) this.setState({ confirmImportOpen: false }) }}
                         sx={{ margin: '8vh auto', width: '80vw' }}>
                         <mui.Card sx={{ width: '80vw', padding: '15px' }}>
                             <mui.Typography>
@@ -170,7 +183,12 @@ class SettingsPage extends React.Component {
                                 - {this.state.topicCount} topics ({this.state.topicNew} new)
                             </mui.Typography>
                             <div style={{ height: '10px' }} />
-                            <mui.ButtonGroup fullWidth variant='outlined'>
+                            {this.state.importLoading &&
+                                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                                    <mui.CircularProgress />
+                                </div>
+                            }
+                            <mui.ButtonGroup fullWidth variant='outlined' disabled={this.state.importLoading}>
                                 <mui.Button onClick={() => this.importOverwrite()}>
                                     Overwrite
                                 </mui.Button>

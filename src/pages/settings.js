@@ -17,7 +17,7 @@ class SettingsPage extends React.Component {
             mentionNew: 0,
             topicNew: 0,
             confirmImportOpen: false,
-            online: false,
+            online: !ChroamData.local,
         };
         this.downloadRef = React.createRef();
         this.fileRef = React.createRef();
@@ -52,17 +52,17 @@ class SettingsPage extends React.Component {
                     console.error(e);
                 }
                 if (newChroamData.length > 0) {
-                    const cData = ChroamData.getEntries();
-                    this.setState({
-                        newChroamData,
-                        dailyCount: newChroamData.filter(p => p.type === 'daily').length,
-                        mentionCount: newChroamData.filter(p => p.type === 'mention').length,
-                        topicCount: newChroamData.filter(p => p.type === 'topic').length,
-                        dailyNew: newChroamData.filter(p => p.type === 'daily' && !cData.some(p2 => p2.id === p.id)).length,
-                        mentionNew: newChroamData.filter(p => p.type === 'mention' && !cData.some(p2 => p2.id === p.id)).length,
-                        topicNew: newChroamData.filter(p => p.type === 'topic' && !cData.some(p2 => p2.id === p.id)).length,
-                        confirmImportOpen: true,
-                    });
+                    ChroamData.getEntries()
+                        .then(cData => this.setState({
+                            newChroamData,
+                            dailyCount: newChroamData.filter(p => p.type === 'daily').length,
+                            mentionCount: newChroamData.filter(p => p.type === 'mention').length,
+                            topicCount: newChroamData.filter(p => p.type === 'topic').length,
+                            dailyNew: newChroamData.filter(p => p.type === 'daily' && !cData.some(p2 => p2.id === p.id)).length,
+                            mentionNew: newChroamData.filter(p => p.type === 'mention' && !cData.some(p2 => p2.id === p.id)).length,
+                            topicNew: newChroamData.filter(p => p.type === 'topic' && !cData.some(p2 => p2.id === p.id)).length,
+                            confirmImportOpen: true,
+                        }));
                 }
             };
             fr.readAsText(files[0]);

@@ -40,35 +40,21 @@ class ChroamData {
             }
             else {
                 new Parse.Query('entry').equalTo('user', '0').find()
-                    .then(res => {
-                        var destroyed = 0;
-                        const onDestroyed = () => {
-                            destroyed++; // TODO: USE AWAIT INSTEAD <----------------
-                            if (destroyed >= res.length) {
-                                var completed = 0;
-                                const onSaved = () => {
-                                    completed++;
-                                    if (completed >= data.length) {
-                                        resolve();
-                                    }
-                                };
-                                for (var e2 of data) {
-                                    const o = new Parse.Object('entry');
-                                    const { id, type, name, content } = e2;
-                                    o.set('user', '0');
-                                    o.set('objectId', id);
-                                    o.set('type', type);
-                                    o.set('name', name);
-                                    o.set('content', content);
-                                    o.save()
-                                        .then(onSaved);
-                                }
-                            }
-                        };
+                    .then(async res => {
                         for (var e of res) {
-                            e.destroy()
-                                .then(onDestroyed);
+                            await e.destroy();
                         }
+                        for (var e2 of data) {
+                            const o = new Parse.Object('entry');
+                            const { id, type, name, content } = e2;
+                            o.set('user', '0');
+                            o.set('objectId', id);
+                            o.set('type', type);
+                            o.set('name', name);
+                            o.set('content', content);
+                            await o.save();
+                        }
+                        resolve();
                     });
             }
         });

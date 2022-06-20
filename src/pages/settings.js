@@ -24,14 +24,15 @@ class SettingsPage extends React.Component {
     }
 
     export() {
-        this.setState({
-            dwHref: URL.createObjectURL(new Blob([
-                JSON.stringify(ChroamData.getEntries()),
-            ], {
-                type: 'application/json',
-            })),
-            dwName: 'chroamData.json',
-        }, () => this.downloadRef.current.click());
+        ChroamData.getEntries()
+            .then(e => this.setState({
+                dwHref: URL.createObjectURL(new Blob([
+                    JSON.stringify(e),
+                ], {
+                    type: 'application/json',
+                })),
+                dwName: 'chroamData.json',
+            }, () => this.downloadRef.current.click()));
     }
 
     import() {
@@ -69,15 +70,15 @@ class SettingsPage extends React.Component {
         event.target.value = null;
     }
 
-    importOverwrite() {
-        ChroamData.setEntries(this.state.newChroamData);
+    async importOverwrite() {
+        await ChroamData.setEntries(this.state.newChroamData);
         this.setState({
             confirmImportOpen: false,
         });
     }
 
-    importAppend() {
-        var newData = ChroamData.getEntries();
+    async importAppend() {
+        var newData = await ChroamData.getEntries();
         for (var e of this.state.newChroamData) {
             const iId = e.id;
             const newEntry = newData.find(p => p.id === iId);
@@ -100,7 +101,7 @@ class SettingsPage extends React.Component {
                 newData.push(e);
             }
         }
-        ChroamData.setEntries(newData);
+        await ChroamData.setEntries(newData);
         this.setState({
             confirmImportOpen: false,
         });

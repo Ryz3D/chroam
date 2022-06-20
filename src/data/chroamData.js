@@ -46,9 +46,8 @@ class ChroamData {
                         }
                         for (var e2 of data) {
                             const o = new Parse.Object('entry');
-                            const { id, type, name, content } = e2;
+                            const { type, name, content } = e2;
                             o.set('user', '0');
-                            o.set('objectId', id);
                             o.set('type', type);
                             o.set('name', name);
                             o.set('content', content);

@@ -18,6 +18,9 @@ class SettingsPage extends React.Component {
             topicNew: 0,
             confirmImportOpen: false,
             online: !ChroamData.local,
+            parseHost: localStorage.getItem('parseHost'),
+            parseId: localStorage.getItem('parseId'),
+            parseKey: localStorage.getItem('parseKey'),
         };
         this.downloadRef = React.createRef();
         this.fileRef = React.createRef();
@@ -115,6 +118,27 @@ class SettingsPage extends React.Component {
         ChroamData.local = !online;
     }
 
+    onPHostChange(e) {
+        localStorage.setItem('parseHost', e.target.value);
+        this.setState({
+            parseHost: e.target.value,
+        });
+    }
+
+    onPIdChange(e) {
+        localStorage.setItem('parseId', e.target.value);
+        this.setState({
+            parseId: e.target.value,
+        });
+    }
+
+    onPKeyChange(e) {
+        localStorage.setItem('parseKey', e.target.value);
+        this.setState({
+            parseKey: e.target.value,
+        });
+    }
+
     render() {
         return (
             <BasicUIComponent
@@ -130,6 +154,9 @@ class SettingsPage extends React.Component {
                         </mui.Button>
                     </mui.ButtonGroup>
                     <mui.FormControlLabel control={<mui.Checkbox checked={this.state.online} onChange={(e, checked) => this.onOnlineChange(checked)} />} label='Enable Database' />
+                    <mui.Input title='Parse Host' value={this.state.parseHost} onChange={(e) => this.onPHostChange(e)} />
+                    <mui.Input title='Parse Id' value={this.state.parseHost} onChange={(e) => this.onPIdChange(e)} />
+                    <mui.Input title='Parse Key' value={this.state.parseHost} onChange={(e) => this.onPKeyChange(e)} />
                     <mui.Modal open={this.state.confirmImportOpen} onClose={() => this.setState({ confirmImportOpen: false })}
                         sx={{ margin: '8vh auto', width: '80vw' }}>
                         <mui.Card sx={{ width: '80vw', padding: '15px' }}>

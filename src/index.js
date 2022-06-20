@@ -41,8 +41,8 @@ TODO:
 
 */
 
-Parse.initialize('UFEdpP8t3rVz2pEESDzfPoCtpy24pmi8xl4OIufw', 'JNugHR2crlrApN3moh5SBS6mOH5FhpY8vBEwoInX');
-Parse.serverURL = 'https://parseapi.back4app.com/';
+Parse.serverURL = localStorage.getItem('parseHost') || 'https://parseapi.back4app.com/';
+Parse.initialize(localStorage.getItem('parseId') || 'UFEdpP8t3rVz2pEESDzfPoCtpy24pmi8xl4OIufw', localStorage.getItem('parseKey') || 'JNugHR2crlrApN3moh5SBS6mOH5FhpY8vBEwoInX');
 
 function SimpleRoute(props) {
   const location = useLocation();

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Parse from 'parse/dist/parse.min.js';
 
 class ChroamData {
-    static local = true;
+    static local = localStorage.getItem('local') ? true : false;
 
     static readDBEntry(e) {
         if (e) {
@@ -26,7 +26,7 @@ class ChroamData {
             else {
                 new Parse.Query('entry').equalTo('user', '0').find()
                     .then(res => {
-                        resolve(res.map(this.readDBEntry));
+                        resolve(res.map(ChroamData.readDBEntry));
                     });
             }
         });
@@ -77,7 +77,8 @@ class ChroamData {
     static hasName(name, type = undefined) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                resolve(this.getEntries().findIndex(p => p.name === name && (type === undefined || p.type === type)) !== -1);
+                ChroamData.getEntries()
+                    .then(e => resolve(e.findIndex(p => p.name === name && (type === undefined || p.type === type)) !== -1));
             }
             else {
                 new Parse.Query('entry').equalTo('user', '0').equalTo('name', name).find()
@@ -91,7 +92,8 @@ class ChroamData {
     static getEntryByName(name, type = undefined) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                resolve(this.getEntries().find(p => p.name === name && (type === undefined || p.type === type)));
+                ChroamData.getEntries()
+                    .then(e => resolve(e.find(p => p.name === name && (type === undefined || p.type === type))));
             }
             else {
                 const q = new Parse.Query('entry').equalTo('user', '0').equalTo('name', name);
@@ -100,7 +102,7 @@ class ChroamData {
                 }
                 q.find()
                     .then(res => {
-                        resolve(this.readDBEntry(res[0]));
+                        resolve(ChroamData.readDBEntry(res[0]));
                     });
             }
         });
@@ -109,7 +111,8 @@ class ChroamData {
     static getEntryById(id, type = undefined) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                resolve(this.getEntries().find(p => p.id === id && (type === undefined || p.type === type)));
+                ChroamData.getEntries()
+                    .then(e => resolve(e.find(p => p.id === id && (type === undefined || p.type === type))));
             }
             else {
                 const q = new Parse.Query('entry').equalTo('user', '0').equalTo('objectId', id);
@@ -118,7 +121,7 @@ class ChroamData {
                 }
                 q.find()
                     .then(res => {
-                        resolve(this.readDBEntry(res[0]));
+                        resolve(ChroamData.readDBEntry(res[0]));
                     });
             }
         });
@@ -133,15 +136,17 @@ class ChroamData {
                 if (!id) {
                     entry.id = uuidv4();
                 }
-                this.setEntries([...this.getEntries().filter(p => p.id !== id), entry]);
-                resolve(id);
+                ChroamData.getEntries()
+                    .then(e => {
+                        ChroamData.setEntries([...e.filter(p => p.id !== id), entry])
+                            .then(() => resolve(id));
+                    });
             }
             else {
-                if (this.timeoutTable[id]) {
-                    clearTimeout(this.timeoutTable[id]);
+                if (ChroamData.timeoutTable[id]) {
+                    clearTimeout(ChroamData.timeoutTable[id]);
                 }
-                this.timeoutTable[id] = setTimeout(() => {
-                    console.log(id);
+                ChroamData.timeoutTable[id] = setTimeout(() => {
                     const o = new Parse.Object('entry');
                     o.set('user', '0');
                     if (id) {
@@ -152,20 +157,21 @@ class ChroamData {
                     o.set('content', content);
                     o.save()
                         .then(o2 => resolve(o2.get('objectId')));
+                    ChroamData.timeoutTable[id] = undefined;
                 }, 400);
             }
         });
     }
 
     static addEntry(type, name, extras = {}) {
-        return this.setEntry({ type, name, ...extras });
+        return ChroamData.setEntry({ type, name, ...extras });
     }
 
     static removeEntry(id) {
         return new Promise(resolve => {
             if (ChroamData.local) {
-                this.setEntries(this.getEntries().filter(p => p.id !== id));
-                resolve();
+                ChroamData.setEntries(ChroamData.getEntries().filter(p => p.id !== id))
+                    .then(() => resolve());
             }
             else {
                 new Parse.Query('entry').equalTo('user', '0').equalTo('objectId', id).find()
@@ -180,29 +186,29 @@ class ChroamData {
     }
 
     static newTopic(name) {
-        if (this.hasName(name, 'topic')) {
+        if (ChroamData.hasName(name, 'topic')) {
             return new Promise(resolve => resolve(false));
         }
         else {
-            return this.addEntry('topic', name, { content: { text: [] } });
+            return ChroamData.addEntry('topic', name, { content: { text: [] } });
         }
     }
 
     static newDaily(name) {
-        if (this.hasName(name, 'daily')) {
+        if (ChroamData.hasName(name, 'daily')) {
             return new Promise(resolve => resolve(false));
         }
         else {
-            return this.addEntry('daily', name, { content: { text: [] } });
+            return ChroamData.addEntry('daily', name, { content: { text: [] } });
         }
     }
 
     static newMention(name) {
-        if (this.hasName(name, 'mention')) {
+        if (ChroamData.hasName(name, 'mention')) {
             return new Promise(resolve => resolve(false));
         }
         else {
-            return this.addEntry('mention', name);
+            return ChroamData.addEntry('mention', name);
         }
     }
 }

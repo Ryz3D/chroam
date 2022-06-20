@@ -17,6 +17,7 @@ class SettingsPage extends React.Component {
             mentionNew: 0,
             topicNew: 0,
             confirmImportOpen: false,
+            online: false,
         };
         this.downloadRef = React.createRef();
         this.fileRef = React.createRef();
@@ -105,6 +106,14 @@ class SettingsPage extends React.Component {
         });
     }
 
+    onOnlineChange(online) {
+        this.setState({
+            online,
+        });
+        localStorage.setItem('local', online ? '' : '1');
+        ChroamData.local = !online;
+    }
+
     render() {
         return (
             <BasicUIComponent
@@ -119,6 +128,7 @@ class SettingsPage extends React.Component {
                             JSON Import
                         </mui.Button>
                     </mui.ButtonGroup>
+                    <mui.FormControlLabel control={<mui.Checkbox checked={this.state.online} onChange={(e, checked) => this.onOnlineChange(checked)} />} label='Enable Database' />
                     <mui.Modal open={this.state.confirmImportOpen} onClose={() => this.setState({ confirmImportOpen: false })}
                         sx={{ margin: '8vh auto', width: '80vw' }}>
                         <mui.Card sx={{ width: '80vw', padding: '15px' }}>

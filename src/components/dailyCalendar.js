@@ -14,17 +14,32 @@ class DailyCalendarComponent extends React.Component {
         };
     }
 
-    async getDaily(day) {
-        const date = new Date(this.state.year, this.state.month, day + 1);
-        return await ChroamData.getEntryByName(ChroamDate.serializeDate(date), 'daily') || {};
+    getDaily(day) {
+        return new Promise(resolve => {
+            const date = new Date(this.state.year, this.state.month, day + 1);
+            ChroamData.getEntryByName(ChroamDate.serializeDate(date), 'daily')
+                .then(entry => {
+                    resolve(entry || {});
+                });
+        });
     }
 
     hasDaily(day) {
-        return (this.getDaily(day).content || { text: [] }).text.length > 0;
+        return new Promise(resolve => {
+            this.getDaily(day)
+                .then(daily => {
+                    resolve((daily.content || { text: [] }).text.length > 0);
+                });
+        });
     }
 
     isLit(day) {
-        return (this.getDaily(day).content || { highlighted: false }).highlighted;
+        return new Promise(resolve => {
+            this.getDaily(day)
+                .then(daily => {
+                    resolve((daily.content || { highlighted: false }).highlighted);
+                });
+        });
     }
 
     toDaily(day) {

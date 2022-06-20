@@ -3,6 +3,7 @@ import Parse from 'parse/dist/parse.min.js';
 
 class ChroamData {
     static local = localStorage.getItem('local') ? true : false;
+    static user = { id: localStorage.getItem('chroamUser') || uuidv4().slice(0, 8) };
 
     static readDBEntry(e) {
         if (e) {
@@ -24,7 +25,7 @@ class ChroamData {
                 resolve(JSON.parse(localStorage.getItem('chroamData') || '[]'));
             }
             else {
-                new Parse.Query('entry').equalTo('user', '0').find()
+                new Parse.Query('entry').equalTo('user', ChroamData.user.id).find()
                     .then(res => {
                         resolve(res.map(ChroamData.readDBEntry));
                     });
@@ -39,7 +40,7 @@ class ChroamData {
                 resolve();
             }
             else {
-                new Parse.Query('entry').equalTo('user', '0').find()
+                new Parse.Query('entry').equalTo('user', ChroamData.user.id).find()
                     .then(async res => {
                         for (var e of res) {
                             await e.destroy();
@@ -47,7 +48,7 @@ class ChroamData {
                         for (var e2 of data) {
                             const o = new Parse.Object('entry');
                             const { type, name, content } = e2;
-                            o.set('user', '0');
+                            o.set('user', ChroamData.user.id);
                             o.set('type', type);
                             o.set('name', name);
                             o.set('content', content);
@@ -66,7 +67,7 @@ class ChroamData {
                     .then(e => resolve(e.findIndex(p => p.name === name && (type === undefined || p.type === type)) !== -1));
             }
             else {
-                new Parse.Query('entry').equalTo('user', '0').equalTo('name', name).find()
+                new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('name', name).find()
                     .then(res => {
                         resolve(res.length > 0);
                     });
@@ -81,7 +82,7 @@ class ChroamData {
                     .then(e => resolve(e.find(p => p.name === name && (type === undefined || p.type === type))));
             }
             else {
-                const q = new Parse.Query('entry').equalTo('user', '0').equalTo('name', name);
+                const q = new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('name', name);
                 if (type !== undefined) {
                     q.equalTo('type', type);
                 }
@@ -100,7 +101,7 @@ class ChroamData {
                     .then(e => resolve(e.find(p => p.id === id && (type === undefined || p.type === type))));
             }
             else {
-                const q = new Parse.Query('entry').equalTo('user', '0').equalTo('objectId', id);
+                const q = new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('objectId', id);
                 if (type !== undefined) {
                     q.equalTo('type', type);
                 }
@@ -133,7 +134,7 @@ class ChroamData {
                 }
                 ChroamData.timeoutTable[id] = setTimeout(() => {
                     const o = new Parse.Object('entry');
-                    o.set('user', '0');
+                    o.set('user', ChroamData.user.id);
                     if (id) {
                         o.set('objectId', id);
                     }
@@ -159,7 +160,7 @@ class ChroamData {
                     .then(() => resolve());
             }
             else {
-                new Parse.Query('entry').equalTo('user', '0').equalTo('objectId', id).find()
+                new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('objectId', id).find()
                     .then(res => {
                         if (res[0] !== undefined) {
                             res[0].destroy()

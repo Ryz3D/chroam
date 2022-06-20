@@ -2,6 +2,8 @@ import React from 'react';
 import * as mui from '@mui/material';
 import BasicUIComponent from '../components/basicUI';
 import ChroamData from '../data/chroamData';
+import { QrCode2 } from '@mui/icons-material';
+import { QRCodeCanvas } from 'qrcode.react';
 
 class SettingsPage extends React.Component {
     constructor(props) {
@@ -22,6 +24,8 @@ class SettingsPage extends React.Component {
             parseId: localStorage.getItem('parseId') || '',
             parseKey: localStorage.getItem('parseKey') || '',
             importLoading: false,
+            user: ChroamData.user.id,
+            userShareOpen: false,
         };
         this.downloadRef = React.createRef();
         this.fileRef = React.createRef();
@@ -119,6 +123,14 @@ class SettingsPage extends React.Component {
         });
     }
 
+    onUserChange(e) {
+        this.setState({
+            user: e.target.value,
+        });
+        localStorage.setItem('chroamUser', e.target.value);
+        ChroamData.user.id = e.target.value;
+    }
+
     onOnlineChange(online) {
         this.setState({
             online,
@@ -128,24 +140,24 @@ class SettingsPage extends React.Component {
     }
 
     onPHostChange(e) {
-        localStorage.setItem('parseHost', e.target.value);
         this.setState({
             parseHost: e.target.value,
         });
+        localStorage.setItem('parseHost', e.target.value);
     }
 
     onPIdChange(e) {
-        localStorage.setItem('parseId', e.target.value);
         this.setState({
             parseId: e.target.value,
         });
+        localStorage.setItem('parseId', e.target.value);
     }
 
     onPKeyChange(e) {
-        localStorage.setItem('parseKey', e.target.value);
         this.setState({
             parseKey: e.target.value,
         });
+        localStorage.setItem('parseKey', e.target.value);
     }
 
     render() {
@@ -162,6 +174,13 @@ class SettingsPage extends React.Component {
                             JSON Import
                         </mui.Button>
                     </mui.ButtonGroup>
+                    <div style={{ display: 'flex' }}>
+                        <mui.Input fullWidth placeholder='User' value={this.state.user} onChange={(e) => this.onUserChange(e)} />
+                        <mui.Button variant='contained' onClick={() => this.setState({ userShareOpen: true })}>
+                            <QrCode2 />
+                        </mui.Button>
+                    </div>
+                    <br />
                     <mui.Input fullWidth placeholder='Parse Host' value={this.state.parseHost} onChange={(e) => this.onPHostChange(e)} />
                     <br />
                     <mui.Input fullWidth placeholder='Parse Id' value={this.state.parseId} onChange={(e) => this.onPIdChange(e)} />
@@ -194,6 +213,23 @@ class SettingsPage extends React.Component {
                                 </mui.Button>
                                 <mui.Button onClick={() => this.importAppend()}>
                                     Append
+                                </mui.Button>
+                            </mui.ButtonGroup>
+                        </mui.Card>
+                    </mui.Modal>
+                    <mui.Modal open={this.state.userShareOpen}
+                        onClose={() => this.setState({ userShareOpen: false })}
+                        sx={{ margin: '8vh auto', width: '80vw' }}>
+                        <mui.Card sx={{ width: '80vw', padding: '15px' }}>
+                            <mui.Typography>
+                                Scan to login:
+                            </mui.Typography>
+                            <div style={{ height: '10px' }} />
+                            <QRCodeCanvas style={{ display: 'block', margin: 'auto' }} value={`https://chroam.web.app/login?u=${ChroamData.user.id}`} />
+                            <div style={{ height: '10px' }} />
+                            <mui.ButtonGroup fullWidth variant='outlined'>
+                                <mui.Button onClick={() => this.setState({ userShareOpen: false })}>
+                                    Close
                                 </mui.Button>
                             </mui.ButtonGroup>
                         </mui.Card>

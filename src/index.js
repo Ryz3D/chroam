@@ -17,6 +17,7 @@ import TopicPage from './pages/topic';
 import MentionsPage from './pages/mentions';
 import TopicsPage from './pages/topics';
 import SettingsPage from './pages/settings';
+import LoginPage from './pages/login';
 import NotFoundPage from './pages/notFound';
 import { grey, purple, teal } from '@mui/material/colors';
 
@@ -137,6 +138,7 @@ class App extends React.Component {
                   <Route path='/mentions' element={<MentionsPage {...pageProps} />} />
                   <Route path='/topics' element={<TopicsPage {...pageProps} />} />
                   <Route path='/settings' element={<SettingsPage {...pageProps} />} />
+                  <Route path='/login' element={<LoginPage {...pageProps} />} />
                   <Route path='*' element={<NotFoundPage {...pageProps} />} />
                 </>
             })} />

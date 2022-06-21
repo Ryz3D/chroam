@@ -88,7 +88,7 @@ class App extends React.Component {
 
   updateDark() {
     const darkMode = JSON.parse(localStorage.getItem('darkMode') || '{}');
-    if (!darkMode.darkMode) {
+    if (darkMode.darkMode === undefined) {
       const time = (new Date().getHours() + new Date().getMinutes() / 60.0);
       this.setState({ dark: time < 9 || time > 22 });
     }

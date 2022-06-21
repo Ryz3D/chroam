@@ -150,8 +150,13 @@ class DailyCalendarComponent extends React.Component {
                         new Array(days).fill(0).map((_, i) =>
                             <mui.Button
                                 key={i}
-                                style={{ ...itemStyle, color: this.state.isLit[i] ? '#ff0' : undefined, zIndex: 10 + i }}
-                                variant={i === today && currentMonth ? 'contained' : (this.state.hasDaily[i] ? 'outlined' : 'text')}
+                                style={{
+                                    ...itemStyle,
+                                    backgroundColor: i === today && currentMonth ? '#ff8ad3' : undefined,
+                                    color: this.state.isLit[i] ? '#ff0' : undefined,
+                                    zIndex: 10 + i,
+                                }}
+                                variant={this.state.hasDaily[i] ? 'contained' : 'outlined'}
                                 color={(i + weekdayOffset + 6) % 7 > 4 ? 'secondary' : 'primary'}
                                 onClick={() => this.openDaily(i)}>
                                 {i + 1}

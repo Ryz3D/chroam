@@ -1,8 +1,6 @@
 import React from 'react';
 import * as mui from '@mui/material';
 import {
-    Brightness3,
-    Brightness7,
     Delete as DeleteIcon,
     Forward as ForwardIcon,
     Help as HelpIcon,

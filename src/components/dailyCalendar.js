@@ -14,72 +14,41 @@ class DailyCalendarComponent extends React.Component {
             days: 0,
             hasDaily: [],
             isLit: [],
+            entries: [],
         };
     }
 
     componentDidMount() {
-        this.updateDays();
+        ChroamData.getEntries('daily')
+            .then(entries => {
+                this.setState({ entries });
+            });
     }
 
-    getDaily(day) {
-        return new Promise(resolve => {
-            const date = new Date(this.state.year, this.state.month, day + 1);
-            ChroamData.getEntryByName(ChroamDate.serializeDate(date), 'daily')
-                .then(entry => {
-                    resolve(entry || {});
-                });
-        });
+    getEntry(day) {
+        const name = ChroamDate.serializeDate(new Date(this.state.year, this.state.month, day + 1));
+        return this.state.entries.find(p => p.name === name);
     }
 
     hasDaily(day) {
-        return new Promise(resolve => {
-            this.getDaily(day)
-                .then(daily => {
-                    resolve((daily.content || { text: [] }).text.length > 0);
-                });
-        });
+        return (this.getEntry(day) || { content: { text: [] } }).content.text.length > 0;
     }
 
     isLit(day) {
-        return new Promise(resolve => {
-            this.getDaily(day)
-                .then(daily => {
-                    resolve((daily.content || { highlighted: false }).highlighted);
-                });
-        });
-    }
-
-    toDaily(day) {
-        const date = new Date(this.state.year, this.state.month, day + 1);
-        this.props.setPage(`/?i=${ChroamDate.serializeDate(date)}`);
-    }
-
-    async updateDays() {
-        const days = new Date(this.state.year, this.state.month + 1, 0).getDate();
-        const hasDaily = [];
-        const isLit = [];
-        for (var i = 0; i < days; i++) {
-            hasDaily.push(await this.hasDaily(i));
-            isLit.push(await this.isLit(i));
-        }
-        this.setState({
-            days,
-            hasDaily,
-            isLit,
-        });
+        return (this.getEntry(day) || { content: { highlighted: false } }).content.highlighted;
     }
 
     prevMonth() {
         if (this.state.month > 0) {
             this.setState({
                 month: this.state.month - 1,
-            }, () => this.updateDays());
+            });
         }
         else {
             this.setState({
                 year: this.state.year - 1,
                 month: 11,
-            }, () => this.updateDays());
+            });
         }
     }
 
@@ -87,13 +56,13 @@ class DailyCalendarComponent extends React.Component {
         if (this.state.month < 11) {
             this.setState({
                 month: this.state.month + 1,
-            }, () => this.updateDays());
+            });
         }
         else {
             this.setState({
                 year: this.state.year + 1,
                 month: 0,
-            }, () => this.updateDays());
+            });
         }
     }
 
@@ -153,10 +122,12 @@ class DailyCalendarComponent extends React.Component {
                                 style={{
                                     ...itemStyle,
                                     backgroundColor: i === today && currentMonth ? '#ff8ad3' : undefined,
-                                    color: this.state.isLit[i] ? '#ff0' : undefined,
+                                    border: this.isLit(i) ? '4px #ff0 outset' : undefined,
+                                    margin: this.isLit(i) ? '-4px' : undefined,
+                                    color: this.isLit(i) ? '#ff0' : undefined,
                                     zIndex: 10 + i,
                                 }}
-                                variant={this.state.hasDaily[i] ? 'contained' : 'outlined'}
+                                variant={this.hasDaily(i) ? 'contained' : 'outlined'}
                                 color={(i + weekdayOffset + 6) % 7 > 4 ? 'secondary' : 'primary'}
                                 onClick={() => this.openDaily(i)}>
                                 {i + 1}

@@ -5,9 +5,44 @@ import ChroamData from '../data/chroamData';
 import { QrCode2 } from '@mui/icons-material';
 import { QRCodeCanvas } from 'qrcode.react';
 
+function timeStr(time) {
+    const minutes = (time - Math.floor(time)) * 60;
+    const h = Math.floor(time).toString().padStart(2, '0');
+    const m = minutes.toString().padStart(2, '0');
+    return `${h}:${m}`;
+}
+
+function TimeSettingsModal(props) {
+    return (
+        <mui.Modal open={props.open} onClose={props.onClose}
+            sx={{ margin: '8vh auto', width: '80vw' }}>
+            <mui.Card sx={{ width: '80vw', padding: '15px' }}>
+                <div style={{ height: '25px' }} />
+                <mui.Slider value={props.values}
+                    min={0} max={24} step={0.25}
+                    onChange={(e, v) => props.onChange(...v)}
+                    valueLabelDisplay='auto' />
+
+                <mui.FormControlLabel control={<mui.Checkbox checked={props.invert} onChange={(e, checked) => props.onInvert(checked)} />}
+                    label={`${props.invert ? 'Bright' : 'Dark'} mode timespan`} />
+
+                <mui.ButtonGroup fullWidth variant='contained'>
+                    <mui.Button onClick={props.onReset}>
+                        Reset
+                    </mui.Button>
+                    <mui.Button onClick={props.onClose}>
+                        Save
+                    </mui.Button>
+                </mui.ButtonGroup>
+            </mui.Card>
+        </mui.Modal>
+    );
+}
+
 class SettingsPage extends React.Component {
     constructor(props) {
         super(props);
+        const darkModeData = JSON.parse(localStorage.getItem('darkMode') || '{}');
         this.state = {
             dwHref: '',
             dwName: '',
@@ -26,6 +61,11 @@ class SettingsPage extends React.Component {
             importLoading: false,
             user: ChroamData.user.id,
             userShareOpen: false,
+            darkMode: darkModeData.darkMode !== undefined ? darkModeData.darkMode : 2,
+            darkStart: darkModeData.darkStart !== undefined ? darkModeData.darkStart : 9,
+            darkEnd: darkModeData.darkEnd !== undefined ? darkModeData.darkEnd : 22,
+            darkInvert: darkModeData.darkInvert !== undefined ? darkModeData.darkInvert : true,
+            setDark: false,
         };
         this.downloadRef = React.createRef();
         this.fileRef = React.createRef();
@@ -160,6 +200,16 @@ class SettingsPage extends React.Component {
         localStorage.setItem('parseKey', e.target.value);
     }
 
+    saveDarkMode() {
+        localStorage.setItem('darkMode', JSON.stringify({
+            darkMode: this.state.darkMode,
+            darkInvert: this.state.darkInvert,
+            darkStart: this.state.darkStart,
+            darkEnd: this.state.darkEnd,
+        }));
+        this.props.updateDark();
+    }
+
     render() {
         return (
             <BasicUIComponent
@@ -188,6 +238,31 @@ class SettingsPage extends React.Component {
                     <mui.Input fullWidth placeholder='Parse Key' value={this.state.parseKey} onChange={(e) => this.onPKeyChange(e)} />
                     <br />
                     <mui.FormControlLabel control={<mui.Checkbox checked={this.state.online} onChange={(e, checked) => this.onOnlineChange(checked)} />} label='Enable Database' />
+                    <br />
+                    <mui.FormControlLabel control={
+                        <mui.Select value={this.state.darkMode} onChange={(e) => this.setState({ darkMode: e.target.value }, () => this.saveDarkMode())}>
+                            {['Always', 'Never', 'Scheduled'].map((v, i) =>
+                                <mui.MenuItem key={i} value={i}>{v}</mui.MenuItem>
+                            )}
+                        </mui.Select>
+                    } label='Dark mode' labelPlacement='top' />
+                    {this.state.darkMode === 2 &&
+                        <>
+                            <div style={{ height: '10px' }} />
+                            <mui.Button fullWidth variant='contained'
+                                onClick={() => this.setState({ setDark: true })}>
+                                {`Dark mode ${this.state.darkInvert ? 'off ' : ''}from ${timeStr(this.state.darkStart)} to ${timeStr(this.state.darkEnd)} `}
+                            </mui.Button>
+                        </>
+                    }
+                    <TimeSettingsModal open={this.state.setDark}
+                        onClose={() => this.setState({ setDark: false })}
+                        onReset={() => this.setState({ darkStart: 9, darkEnd: 22, darkInvert: true }, () => this.saveDarkMode())}
+                        values={[this.state.darkStart, this.state.darkEnd]}
+                        onChange={(darkStart, darkEnd) => this.setState({ darkStart, darkEnd }, () => this.saveDarkMode())}
+                        invert={this.state.darkInvert}
+                        onInvert={(v) => this.setState({ darkInvert: v }, () => this.saveDarkMode())} />
+
                     <mui.Modal open={this.state.confirmImportOpen}
                         onClose={() => { if (!this.state.importLoading) this.setState({ confirmImportOpen: false }) }}
                         sx={{ margin: '8vh auto', width: '80vw' }}>
@@ -232,12 +307,12 @@ class SettingsPage extends React.Component {
                                     Close
                                 </mui.Button>
                             </mui.ButtonGroup>
-                        </mui.Card>
-                    </mui.Modal>
+                        </mui.Card >
+                    </mui.Modal >
                     <a style={{ display: 'none' }} ref={this.downloadRef} href={this.state.dwHref} download={this.state.dwName}>download</a>
                     <input style={{ display: 'none' }} type='file' ref={this.fileRef} onChange={(e) => this.actuallyImport(e)} accept='application/json' />
-                </div>
-            </BasicUIComponent>
+                </div >
+            </BasicUIComponent >
         );
     }
 }

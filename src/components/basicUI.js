@@ -140,22 +140,6 @@ class BasicUIComponent extends React.Component {
                                     Settings
                                 </mui.ListItemText>
                             </mui.MenuItem>
-                            <mui.MenuItem onClick={() => { this.props.setDark(this.props.theme.palette.mode !== 'dark'); this.closeMenu(); }}>
-                                <mui.ListItemIcon>
-                                    {this.props.theme.palette.mode === 'dark' ?
-                                        <Brightness7 />
-                                        :
-                                        <Brightness3 />
-                                    }
-                                </mui.ListItemIcon>
-                                <mui.ListItemText>
-                                    {this.props.theme.palette.mode === 'dark' ?
-                                        <>Light mode</>
-                                        :
-                                        <>Dark mode</>
-                                    }
-                                </mui.ListItemText>
-                            </mui.MenuItem>
                             <mui.MenuItem onClick={() => { this.setState({ showHelp: true }); this.closeMenu(); }}>
                                 <mui.ListItemIcon>
                                     <HelpIcon />

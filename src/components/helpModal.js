@@ -11,8 +11,8 @@ class HelpModalComponent extends React.Component {
                     <img style={{ width: '100%' }} src={logo} alt='CHROAM logo' />
                     <div style={{ height: '2rem' }} />
                     <div>I cannot help you, but I do want to show you this fine logo I've drawn.</div>
-                </mui.Card >
-            </mui.Modal >
+                </mui.Card>
+            </mui.Modal>
         );
     }
 }

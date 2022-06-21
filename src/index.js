@@ -78,13 +78,37 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dark: (localStorage.getItem('darkMode') || '1') === '1',
+      dark: true,
     };
   }
 
-  setDark(dark) {
-    localStorage.setItem('darkMode', dark ? '1' : '0');
-    this.setState({ dark });
+  componentDidMount() {
+    this.updateDark();
+  }
+
+  updateDark() {
+    const darkMode = JSON.parse(localStorage.getItem('darkMode') || '{}');
+    if (!darkMode.darkMode) {
+      const time = (new Date().getHours() + new Date().getMinutes() / 60.0);
+      this.setState({ dark: time < 9 || time > 22 });
+    }
+    else {
+      switch (darkMode.darkMode) {
+        case 0:
+          this.setState({ dark: true });
+          break;
+        case 1:
+          this.setState({ dark: false });
+          break;
+        case 2:
+          const time = (new Date().getHours() + new Date().getMinutes() / 60.0);
+          const inside = time >= darkMode.darkStart && time <= darkMode.darkEnd;
+          this.setState({ dark: darkMode.darkInvert ? !inside : inside });
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   render() {
@@ -120,7 +144,6 @@ class App extends React.Component {
     //const routeComponent = isIOS ? SimpleRoute : AnimationRoute;
     const routeComponent = SimpleRoute;
     const pageProps = {
-      setDark: (dark) => this.setDark(dark),
     };
 
     return (
@@ -137,7 +160,7 @@ class App extends React.Component {
                   <Route path='/topic' element={<TopicPage {...pageProps} />} />
                   <Route path='/mentions' element={<MentionsPage {...pageProps} />} />
                   <Route path='/topics' element={<TopicsPage {...pageProps} />} />
-                  <Route path='/settings' element={<SettingsPage {...pageProps} />} />
+                  <Route path='/settings' element={<SettingsPage updateDark={() => this.updateDark()} {...pageProps} />} />
                   <Route path='/login' element={<LoginPage {...pageProps} />} />
                   <Route path='*' element={<NotFoundPage {...pageProps} />} />
                 </>

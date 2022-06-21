@@ -154,14 +154,6 @@ class EditLineComponent extends React.Component {
     }
 
     render() {
-        var text = this.props.text
-            .replace(ChroamItem.uncheckedCheckboxMatch, '')
-            .replace(ChroamItem.checkedCheckboxMatch, '')
-            .replace(ChroamItem.bulletMatch, '')
-            .replace(ChroamItem.accordionMatch, '');
-        const textComponents = [];
-        const matches = [...text.matchAll(/\[\[(.*?)\]\]/g), ...text.matchAll(/#([äöüÄÖÜß_-\w]*)/g)].sort((a, b) => a.index - b.index);
-        var index = 0;
         const textCompStyle = {
             display: 'inline',
         };
@@ -170,10 +162,52 @@ class EditLineComponent extends React.Component {
             color: teal.A700,
             cursor: 'pointer',
         };
+        const hrefCompStyle = {
+            ...refCompStyle,
+            color: teal[800],
+        };
+        const imgStyle = {
+            display: 'block',
+            margin: 'auto',
+            maxWidth: '100%',
+            maxHeight: '10vh',
+        };
+
+        const textComponents = [];
+        const imgComponents = [];
+        const textComponent = (key, text) => {
+            const urls = [...text.matchAll(/https?:\/\/\w+:?[\w-/()@%_?&#=.]*/gi)];
+            var index2 = 0;
+            for (var i2 in urls) {
+                const m2 = urls[i2];
+                textComponents.push(<div key={`${key}/${i2 * 2}`} style={textCompStyle}>{text.slice(index2, m2.index)}</div>);
+                textComponents.push(<div key={`${key}/${i2 * 2 + 1}`} style={hrefCompStyle} id={`chroamref${i}`} onClick={(e) => {
+                    e.preventDefault();
+                    window.location = m2[0];
+                    return false;
+                }}><u>{m2[0]}</u></div>);
+                index2 = m2.index + m2[0].length;
+
+                if (['png', 'jpg', 'jpeg', 'gif', 'webp'].some(p => m2[0].toLowerCase().endsWith('.' + p))) {
+                    imgComponents.push(<img style={imgStyle}
+                        src={m2[0]} alt={m2[0]}
+                        onError={(e) => e.target.style.display = 'none'} />);
+                }
+            }
+            textComponents.push(<div key={key} style={textCompStyle}>{text.slice(index2)}</div>);
+        };
+
+        var index = 0;
+        var text = this.props.text
+            .replace(ChroamItem.uncheckedCheckboxMatch, '')
+            .replace(ChroamItem.checkedCheckboxMatch, '')
+            .replace(ChroamItem.bulletMatch, '')
+            .replace(ChroamItem.accordionMatch, '');
+        const matches = [...text.matchAll(/\[\[(.*?)\]\]/g), ...text.matchAll(/#([äöüÄÖÜß_-\w]*)/g)].sort((a, b) => a.index - b.index);
         for (var i in matches) {
             const m = matches[i];
             const isTopic = m[0].startsWith('[[');
-            textComponents.push(<div key={i * 2} style={textCompStyle}>{text.slice(index, m.index)}</div>);
+            textComponent(i * 2, text.slice(index, m.index));
             textComponents.push(<div key={i * 2 + 1} style={refCompStyle} id={`chroamref${i}`} onClick={(e) => {
                 e.preventDefault();
                 this.props.navigate(isTopic ? `/topic?i=${encodeURIComponent(m[1])}` : `/mention?i=${encodeURIComponent(m[1])}`);
@@ -182,7 +216,7 @@ class EditLineComponent extends React.Component {
             }}><u>{m[0]}</u></div>);
             index = m.index + m[0].length;
         }
-        textComponents.push(<div key={matches.length * 2} style={textCompStyle}>{text.slice(index)}</div>);
+        textComponent(matches.length * 2, text.slice(index));
 
         const rootStyle = {
             margin: this.props.edit ? '4px 0' : '5px 0',
@@ -237,6 +271,7 @@ class EditLineComponent extends React.Component {
             minHeight: '22px',
             marginLeft: '3px',
             cursor: this.props.disabled ? '' : 'pointer',
+            wordBreak: 'break-word',
         };
 
         return (
@@ -270,6 +305,7 @@ class EditLineComponent extends React.Component {
                         }
                         <div style={textStyle} onClick={(e) => this.onClick(e)}>
                             {textComponents}
+                            {imgComponents}
                         </div>
                     </div>
                 }

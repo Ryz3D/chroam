@@ -120,7 +120,7 @@ class ChroamData {
     static timeoutTable = {};
 
     static setEntry(entry) {
-        const { id, type, name, content } = entry;
+        const { id } = entry;
         return new Promise(resolve => {
             if (ChroamData.local) {
                 if (!id) {
@@ -136,25 +136,28 @@ class ChroamData {
                 if (ChroamData.timeoutTable[id]) {
                     clearTimeout(ChroamData.timeoutTable[id]);
                 }
-                ChroamData.timeoutTable[id] = setTimeout(() => {
+                ChroamData.timeoutTable[id] = setTimeout((e) => {
                     const o = new Parse.Object('entry');
                     o.set('user', ChroamData.user.id);
-                    if (id) {
-                        o.set('objectId', id);
+                    if (e.id) {
+                        o.set('objectId', e.id);
                     }
-                    o.set('type', type);
-                    o.set('name', name);
-                    o.set('content', content);
+                    o.set('type', e.type);
+                    o.set('name', e.name);
+                    o.set('content', e.content);
                     o.save()
-                        .then(o2 => resolve(o2.get('objectId')));
-                    ChroamData.timeoutTable[id] = undefined;
-                }, 400);
+                        .then(o2 => resolve(o2.id));
+                    ChroamData.timeoutTable[e.id] = undefined;
+                }, 400, entry);
             }
         });
     }
 
     static addEntry(type, name, extras = {}) {
-        return ChroamData.setEntry({ type, name, ...extras });
+        return new Promise(resolve => {
+            ChroamData.setEntry({ type, name, ...extras })
+                .then((id) => resolve(id));
+        });
     }
 
     static removeEntry(id) {
@@ -179,30 +182,48 @@ class ChroamData {
     }
 
     static newTopic(name) {
-        if (ChroamData.hasName(name, 'topic')) {
-            return new Promise(resolve => resolve(false));
-        }
-        else {
-            return ChroamData.addEntry('topic', name, { content: { text: [] } });
-        }
+        return new Promise(resolve => {
+            ChroamData.hasName(name, 'topic')
+                .then(exists => {
+                    if (exists) {
+                        resolve(false);
+                    }
+                    else {
+                        ChroamData.addEntry('topic', name, { content: { text: [], highlighted: false } })
+                            .then((id) => resolve(id));
+                    }
+                });
+        });
     }
 
     static newDaily(name) {
-        if (ChroamData.hasName(name, 'daily')) {
-            return new Promise(resolve => resolve(false));
-        }
-        else {
-            return ChroamData.addEntry('daily', name, { content: { text: [] } });
-        }
+        return new Promise(resolve => {
+            ChroamData.hasName(name, 'daily')
+                .then(exists => {
+                    if (exists) {
+                        resolve(false);
+                    }
+                    else {
+                        ChroamData.addEntry('daily', name, { content: { text: [], highlighted: false } })
+                            .then((id) => resolve(id));
+                    }
+                });
+        });
     }
 
     static newMention(name) {
-        if (ChroamData.hasName(name, 'mention')) {
-            return new Promise(resolve => resolve(false));
-        }
-        else {
-            return ChroamData.addEntry('mention', name);
-        }
+        return new Promise(resolve => {
+            ChroamData.hasName(name, 'mention')
+                .then(exists => {
+                    if (exists) {
+                        resolve(false);
+                    }
+                    else {
+                        ChroamData.addEntry('mention', name)
+                            .then((id) => resolve(id));
+                    }
+                });
+        });
     }
 }
 

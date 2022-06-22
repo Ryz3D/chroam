@@ -31,12 +31,14 @@ class MentionPage extends React.Component {
     async locationUpdate() {
         const urlSearch = new URLSearchParams(window.location.search);
         const name = urlSearch.get('i') || '';
-        var id = ((await ChroamData.getEntryByName(name, 'mention')) || {}).id;
+        var entry = await ChroamData.getEntryByName(name, 'mention');
+        var id = (entry || {}).id;
         if (id === undefined) {
             id = await ChroamData.newMention(name);
+            entry = await ChroamData.getEntryById(id, 'mention');
         }
         this.setState({
-            entry: await ChroamData.getEntryById(id),
+            entry,
         });
     }
 

@@ -34,12 +34,14 @@ class TopicPage extends React.Component {
     async locationUpdate() {
         const urlSearch = new URLSearchParams(window.location.search);
         const name = urlSearch.get('i') || '';
-        var id = ((await ChroamData.getEntryByName(name, 'topic')) || {}).id;
+        var entry = await ChroamData.getEntryByName(name, 'topic');
+        var id = (entry || {}).id;
         if (id === undefined) {
-            id = await ChroamData.newTopic(name);
+            id = await ChroamData.newMention(name);
+            entry = await ChroamData.getEntryById(id, 'topic');
         }
         this.setState({
-            entry: (await ChroamData.getEntryById(id)) || { content: { text: [] } },
+            entry,
         });
     }
 

@@ -13,11 +13,11 @@ class TopicPage extends React.Component {
 
         this.state = {
             entry: {
-                id: undefined,
                 type: 'topic',
                 name: '',
                 content: {
                     text: [],
+                    highlighted: false,
                 },
             },
         };

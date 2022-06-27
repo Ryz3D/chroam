@@ -12,7 +12,6 @@ class MentionPage extends React.Component {
 
         this.state = {
             entry: {
-                id: undefined,
                 type: 'mention',
                 name: '',
             },

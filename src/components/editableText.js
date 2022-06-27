@@ -18,11 +18,21 @@ class EditableTextComponent extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.passEdit();
+    }
+
+    passEdit() {
+        if (this.props.onEdit) {
+            this.props.onEdit(this.state.edit !== -1);
+        }
+    }
+
     deleteIfEmtpy(i, editOverride = null) {
         if (!this.props.content.text[i] && i < this.props.content.text.length) {
             this.props.onDeleteLine(i, () => this.setState({
                 edit: editOverride === null ? -1 : editOverride,
-            }));
+            }, () => this.passEdit()));
             return true;
         }
         return false;
@@ -32,6 +42,7 @@ class EditableTextComponent extends React.Component {
         if (this.state.edit === this.props.content.text.length) {
             this.props.onLineChange(this.state.edit, '');
         }
+        this.passEdit();
     }
 
     onEdit(i, v) {
@@ -51,10 +62,10 @@ class EditableTextComponent extends React.Component {
                 this.setState({ edit: i }, () => this.addIfNew());
                 break;
             case false:
-                this.setState({ edit: -1 });
+                this.setState({ edit: -1 }, () => this.passEdit());
                 break;
             case -1:
-                this.setState({ edit: Math.max(i - 1, 0) });
+                this.setState({ edit: Math.max(i - 1, 0) }, () => this.passEdit());
                 break;
             case 1:
                 const contentLength = this.props.content.text.findLastIndex(p => p) + 1;
@@ -82,26 +93,26 @@ class EditableTextComponent extends React.Component {
         }
         this.props.onNextLine(i, () => this.setState({
             edit: Math.min(i + 1, this.props.content.text.length),
-        }), newContent);
+        }, () => this.passEdit()), newContent);
     }
 
     onLastLine(i, del) {
         if (del) {
             this.props.onDeleteLine(i, () => this.setState({
                 edit: i - 1,
-            }));
+            }, () => this.passEdit()));
         }
         else {
             this.setState({
                 edit: i - 1,
-            });
+            }, () => this.passEdit());
         }
     }
 
     onLastNextLine(i) {
         this.props.onDeleteLine(i, () => this.setState({
             edit: i,
-        }));
+        }, () => this.passEdit()));
     }
 
     render() {

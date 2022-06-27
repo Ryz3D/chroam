@@ -71,7 +71,11 @@ class ChroamData {
                     .then(e => resolve(e.findIndex(p => p.name === name) !== -1));
             }
             else {
-                new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('name', name).find()
+                const q = new Parse.Query('entry').equalTo('user', ChroamData.user.id).equalTo('name', name);
+                if (type !== undefined) {
+                    q.equalTo('type', type);
+                }
+                q.find()
                     .then(res => {
                         resolve(res.length > 0);
                     });

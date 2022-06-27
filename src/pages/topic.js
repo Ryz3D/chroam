@@ -14,6 +14,7 @@ class TopicPage extends React.Component {
         this.state = {
             entry: {
                 id: undefined,
+                type: 'topic',
                 name: '',
                 content: {
                     text: [],
@@ -37,7 +38,7 @@ class TopicPage extends React.Component {
         var entry = await ChroamData.getEntryByName(name, 'topic');
         var id = (entry || {}).id;
         if (id === undefined) {
-            id = await ChroamData.newMention(name);
+            id = await ChroamData.newTopic(name);
             entry = await ChroamData.getEntryById(id, 'topic');
         }
         this.setState({

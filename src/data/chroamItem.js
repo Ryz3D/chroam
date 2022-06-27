@@ -1,8 +1,8 @@
 class ChroamItem {
-    static uncheckedCheckboxMatch = /^\[?\s*\]/;
-    static checkedCheckboxMatch = /^\[?x\]/;
-    static bulletMatch = /^\s*-\s*/;
-    static accordionMatch = /^\s*>\s*/;
+    static uncheckedCheckboxMatch = /^!?\[?\s*\]/;
+    static checkedCheckboxMatch = /^!?\[?x\]/;
+    static bulletMatch = /^!?\s*-\s*/;
+    static accordionMatch = /^!?\s*>\s*/;
 
     static isCheckbox(t) {
         return this.isUncheckedCheckbox(t) || this.isCheckedCheckbox(t);

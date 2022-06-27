@@ -156,6 +156,7 @@ class EditLineComponent extends React.Component {
     render() {
         const textCompStyle = {
             display: 'inline',
+            fontWeight: this.props.text.startsWith('!') ? 'bold' : '',
         };
         const refCompStyle = {
             ...textCompStyle,
@@ -199,6 +200,7 @@ class EditLineComponent extends React.Component {
 
         var index = 0;
         var text = this.props.text
+            .replace(/^!\s*/, '')
             .replace(ChroamItem.uncheckedCheckboxMatch, '')
             .replace(ChroamItem.checkedCheckboxMatch, '')
             .replace(ChroamItem.bulletMatch, '')

@@ -7,6 +7,7 @@ import {
     Forward as ForwardIcon,
     Help as HelpIcon,
     MoreVert as MoreVertIcon,
+    Save,
     Settings as SettingsIcon,
 } from '@mui/icons-material';
 import SearchBarComponent from './searchBar';
@@ -25,7 +26,11 @@ class BasicUIComponent extends React.Component {
             drawerOpen: false,
             menuAnchor: null,
             showHelp: false,
+            dwHref: '',
+            dwName: '',
         };
+
+        this.downloadRef = React.createRef();
     }
 
     closeMenu() {
@@ -42,6 +47,22 @@ class BasicUIComponent extends React.Component {
             this.props.navigate('/?i=' + ChroamDate.serializeDate(new Date()));
         }
         this.closeMenu();
+    }
+
+    export() {
+        const data = this.props.export();
+        if (data.url) {
+            this.setState({
+                dwHref: data.url,
+                dwName: data.name,
+            }, () => this.downloadRef.current.click());
+        }
+        else {
+            this.setState({
+                dwHref: URL.createObjectURL(new Blob([data.data], { type: data.type })),
+                dwName: data.name,
+            }, () => this.downloadRef.current.click());
+        }
     }
 
     render() {
@@ -197,12 +218,20 @@ class BasicUIComponent extends React.Component {
                                 </mui.IconButton>
                             </mui.Tooltip>
                         }
+                        {this.props.export &&
+                            <mui.Tooltip arrow title='Export'>
+                                <mui.IconButton size='large' onClick={() => this.export()}>
+                                    <Save />
+                                </mui.IconButton>
+                            </mui.Tooltip>
+                        }
                     </mui.Toolbar>
                 </mui.AppBar>
                 <div style={rootStyle}>
                     {this.props.children}
                 </div>
                 <HelpModalComponent open={this.state.showHelp} onClose={() => this.setState({ showHelp: false })} />
+                <a style={{ display: 'none' }} ref={this.downloadRef} href={this.state.dwHref} download={this.state.dwName}>download</a>
             </div>
         );
     }

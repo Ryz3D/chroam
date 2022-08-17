@@ -4,24 +4,26 @@ import routerNavigate from '../wrapper/routerNavigate';
 import BasicUIComponent from '../components/basicUI';
 import BigHeaderComponent from '../components/bigHeader';
 import muiTheme from '../wrapper/muiTheme';
-import { Brush, Clear, FormatColorReset, TouchApp } from '@mui/icons-material';
+import { Brush, Check, Clear, FormatColorReset, InvertColors, TouchApp } from '@mui/icons-material';
 
 class NotesPage extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             canvasWidth: 200,
             canvasHeight: 200,
             lines: JSON.parse(localStorage.getItem('chroamNotes') || '[]'),
             tool: 0,
             pressure: true,
+            color: 0,
         };
 
         this.boxRef = React.createRef();
         this.canvasRef = React.createRef();
 
-        this.brushColor = '#f00';
+        this.colors = ['#000', '#1de9b6', '#f00'];
+        this.darkColors = ['#000'];
+        this.brushColor = this.colors[0];
         this.brushRadius = 1;
         this.eraseRadius = 15;
         this.moveThreshold = 2;
@@ -49,7 +51,13 @@ class NotesPage extends React.Component {
     }
 
     componentDidMount() {
-        document.body.style.overflow = 'hidden';
+        document.body.style = {
+            overflow: 'hidden',
+            position: 'fixed',
+        };
+        this.scrollPreventer = e => { e.preventDefault(); return false; };
+        document.body.addEventListener('touchmove', this.scrollPreventer, { passive: false });
+
         this.windowHandler = () => {
             if (this.boxRef.current) {
                 this.setState({
@@ -63,6 +71,7 @@ class NotesPage extends React.Component {
     }
 
     componentWillUnmount() {
+        document.body.removeEventListener('touchmove', this.scrollPreventer);
         window.removeEventListener('resize', this.windowHandler);
     }
 
@@ -291,11 +300,24 @@ class NotesPage extends React.Component {
             <BasicUIComponent
                 setDark={this.props.setDark}
                 setPage={(u) => this.setPage(u)}
-                clearAll={() => this.clearAll()}>
+                clearAll={() => this.clearAll()}
+                export={() => ({ url: this.canvasRef.current.toDataURL(), name: 'chroamNotes' })}>
                 <BigHeaderComponent
                     header='Notes' noSelect
                     end={
                         <div style={{ display: 'flex' }}>
+                            {this.colors.map((c, i) =>
+                                <mui.IconButton key={i} style={{
+                                    marginRight: '10px',
+                                    backgroundColor: c,
+                                }} onClick={() => { this.brushColor = c; this.setState({ tool: 0, color: i }); }}>
+                                    {this.state.color === i ?
+                                        <Check color={this.darkColors.includes(c) ? 'primary' : '#000'} />
+                                        :
+                                        <InvertColors color={this.darkColors.includes(c) ? 'primary' : '#000'} />
+                                    }
+                                </mui.IconButton>
+                            )}
                             <mui.IconButton color={this.state.tool === 0 ? 'primary' : undefined}
                                 onClick={() => this.setState({ tool: 0 })}>
                                 <Brush />

@@ -14,6 +14,7 @@ import DailyPage from './pages/daily';
 import CalendarPage from './pages/calendar';
 import MentionPage from './pages/mention';
 import TopicPage from './pages/topic';
+import NotesPage from './pages/notes';
 import MentionsPage from './pages/mentions';
 import TopicsPage from './pages/topics';
 import SettingsPage from './pages/settings';
@@ -158,6 +159,7 @@ class App extends React.Component {
                   <Route path='/calendar' element={<CalendarPage {...pageProps} />} />
                   <Route path='/mention' element={<MentionPage {...pageProps} />} />
                   <Route path='/topic' element={<TopicPage {...pageProps} />} />
+                  <Route path='/notes' element={<NotesPage {...pageProps} />} />
                   <Route path='/mentions' element={<MentionsPage {...pageProps} />} />
                   <Route path='/topics' element={<TopicsPage {...pageProps} />} />
                   <Route path='/settings' element={<SettingsPage updateDark={() => this.updateDark()} {...pageProps} />} />

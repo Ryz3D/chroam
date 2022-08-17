@@ -1,6 +1,8 @@
 import React from 'react';
 import * as mui from '@mui/material';
 import {
+    Brush,
+    Clear,
     Delete as DeleteIcon,
     Forward as ForwardIcon,
     Help as HelpIcon,
@@ -45,12 +47,20 @@ class BasicUIComponent extends React.Component {
     render() {
         const showDaySwitcher = this.props.onDaySwitch && this.props.windowWidth > 340;
 
+        const noSelectStyle = {
+            MozUserSelect: 'none',
+            WebkitUserSelect: 'none',
+            MsUserSelect: 'none',
+            OUserSelect: 'none',
+            userSelect: 'none',
+        };
         const rootStyle = {
             padding: '15px 20px',
+            ...noSelectStyle,
         };
 
         return (
-            <div style={{ minWidth: '100vw', minHeight: '100vh' }}>
+            <div style={{ minWidth: '100vw', minHeight: '100vh', ...noSelectStyle }}>
                 {/*
                 <mui.SwipeableDrawer open={this.state.drawerOpen}
                     onOpen={() => this.setState({ drawerOpen: true })}
@@ -110,8 +120,16 @@ class BasicUIComponent extends React.Component {
                                 <mui.ListItemIcon>
                                     {Icons.create(Icons.daily.default)}
                                 </mui.ListItemIcon>
-                                <mui.ListItemText>
+                                <mui.ListItemText style={noSelectStyle}>
                                     Calendar
+                                </mui.ListItemText>
+                            </mui.MenuItem>
+                            <mui.MenuItem onClick={() => this.props.navigate('/notes')}>
+                                <mui.ListItemIcon>
+                                    <Brush />
+                                </mui.ListItemIcon>
+                                <mui.ListItemText>
+                                    Scribble
                                 </mui.ListItemText>
                             </mui.MenuItem>
                             <mui.MenuItem onClick={() => this.props.navigate('/topics')}>
@@ -171,6 +189,13 @@ class BasicUIComponent extends React.Component {
                                     </mui.IconButton>
                                 </mui.Tooltip>
                             </>
+                        }
+                        {this.props.clearAll &&
+                            <mui.Tooltip arrow title='Clear'>
+                                <mui.IconButton size='large' onClick={() => this.props.clearAll()}>
+                                    <Clear />
+                                </mui.IconButton>
+                            </mui.Tooltip>
                         }
                     </mui.Toolbar>
                 </mui.AppBar>

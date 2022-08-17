@@ -60,16 +60,25 @@ class SearchBarComponent extends React.Component {
     render() {
         const height = '40px';
 
+        const noSelectStyle = {
+            MozUserSelect: 'none',
+            WebkitUserSelect: 'none',
+            MsUserSelect: 'none',
+            OUserSelect: 'none',
+            userSelect: 'none',
+        };
         const inputStyle = {
             transition: 'width 500ms cubic-bezier(0.45, -0.37, 0.6, 1.39)',
             width: this.state.open ? '90%' : '40%',
             height,
             margin: '0 10px',
+            ...noSelectStyle,
         };
         const textLabelStyle = {
             display: 'inline',
             position: 'relative',
             bottom: '6px',
+            ...noSelectStyle,
         };
 
         return (

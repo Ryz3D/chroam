@@ -8,15 +8,24 @@ class BigHeaderComponent extends React.Component {
             flexDirection: 'row',
             justifyContent: 'space-between',
         };
+        const noSelectStyle = this.props.noSelect ? {
+            MozUserSelect: 'none',
+            WebkitUserSelect: 'none',
+            MsUserSelect: 'none',
+            OUserSelect: 'none',
+            userSelect: 'none',
+        } : {};
         const headerStyle = {
             fontFamily: '\'Montserrat\', sans-serif',
             fontSize: this.props.smaller ? '2.0rem' : '2.8rem',
             fontWeight: 200,
+            ...noSelectStyle,
         };
         const subheaderStyle = {
             fontFamily: '\'Montserrat\', sans-serif',
             fontSize: this.props.smaller ? '0.8rem' : '1rem',
             fontWeight: 200,
+            ...noSelectStyle,
         };
         const endStyle = {
             display: 'flex',

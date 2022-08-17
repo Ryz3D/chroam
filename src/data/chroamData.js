@@ -124,23 +124,22 @@ class ChroamData {
     static timeoutTable = {};
 
     static setEntry(entry) {
-        const { id } = entry;
         return new Promise(resolve => {
             if (ChroamData.local) {
-                if (!id) {
+                if (!entry.id) {
                     entry.id = uuidv4();
                 }
                 ChroamData.getEntries()
                     .then(e => {
-                        ChroamData.setEntries([...e.filter(p => p.id !== id), entry])
-                            .then(() => resolve(id));
+                        ChroamData.setEntries([...e.filter(p => p.id !== entry.id), entry])
+                            .then(() => resolve(entry.id));
                     });
             }
             else {
-                if (ChroamData.timeoutTable[id]) {
-                    clearTimeout(ChroamData.timeoutTable[id]);
+                if (ChroamData.timeoutTable[entry.id]) {
+                    clearTimeout(ChroamData.timeoutTable[entry.id]);
                 }
-                ChroamData.timeoutTable[id] = setTimeout((e) => {
+                ChroamData.timeoutTable[entry.id] = setTimeout((e) => {
                     const o = new Parse.Object('entry');
                     o.set('user', ChroamData.user.id);
                     if (e.id) {

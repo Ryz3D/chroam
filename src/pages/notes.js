@@ -21,12 +21,13 @@ class NotesPage extends React.Component {
         this.boxRef = React.createRef();
         this.canvasRef = React.createRef();
 
+        this.moveThreshold = 2;
+        this.scaleFactor = 1.5;
         this.colors = ['#000', '#1de9b6', '#f00'];
         this.darkColors = ['#000'];
         this.brushColor = this.colors[0];
         this.brushRadius = 1;
         this.eraseRadius = 15;
-        this.moveThreshold = 2;
         this.clearStart = [0, 0];
         this.clearEnd = [0, 0];
     }
@@ -61,8 +62,8 @@ class NotesPage extends React.Component {
         this.windowHandler = () => {
             if (this.boxRef.current) {
                 this.setState({
-                    canvasWidth: this.boxRef.current.clientWidth,
-                    canvasHeight: this.boxRef.current.clientHeight,
+                    canvasWidth: this.boxRef.current.clientWidth * this.scaleFactor,
+                    canvasHeight: this.boxRef.current.clientHeight * this.scaleFactor,
                 }, () => this.canvasRender());
             }
         };
@@ -85,6 +86,9 @@ class NotesPage extends React.Component {
     }
 
     lineStart(x, y) {
+        x *= this.scaleFactor;
+        y *= this.scaleFactor;
+
         this.isDrawing = true;
         if (this.state.tool === 0) {
             this.setState({
@@ -101,6 +105,9 @@ class NotesPage extends React.Component {
         }
     }
     lineMove(x, y) {
+        x *= this.scaleFactor;
+        y *= this.scaleFactor;
+
         if (!this.isDrawing)
             return;
 
@@ -293,6 +300,8 @@ class NotesPage extends React.Component {
             ...noSelectStyle,
         };
         const actualCanvasStyle = {
+            width: '100%',
+            height: '100%',
             ...noSelectStyle,
         };
 

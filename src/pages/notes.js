@@ -96,7 +96,7 @@ class NotesPage extends React.Component {
                     ...this.state.lines.filter(l => l.length > 0),
                     [[Math.round(x), Math.round(y)], [Math.round(x), Math.round(y) + 1, this.brushRadius, this.brushColor]],
                 ],
-            }, () => this.lineMove(x, y));
+            });
         }
         else if (this.state.tool === 2) {
             this.clearStart = [x, y];

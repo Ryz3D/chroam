@@ -5,6 +5,7 @@ import BasicUIComponent from '../components/basicUI';
 import BigHeaderComponent from '../components/bigHeader';
 import muiTheme from '../wrapper/muiTheme';
 import { Brush, Check, Clear, FormatColorReset, InvertColors, TouchApp } from '@mui/icons-material';
+import ChroamData from '../data/chroamData';
 
 class NotesPage extends React.Component {
     constructor(props) {
@@ -12,11 +13,14 @@ class NotesPage extends React.Component {
         this.state = {
             canvasWidth: 200,
             canvasHeight: 200,
-            lines: JSON.parse(localStorage.getItem('chroamNotes') || '[]'),
+            lines: [],
             tool: 0,
             pressure: true,
             color: 0,
         };
+
+        const search = new URLSearchParams(document.location.search);
+        this.id = search.get('i') || '';
 
         this.boxRef = React.createRef();
         this.canvasRef = React.createRef();
@@ -51,7 +55,14 @@ class NotesPage extends React.Component {
         }
     }
 
+    save() {
+        ChroamData.setNotes(this.id, this.state.lines);
+    }
+
     componentDidMount() {
+        ChroamData.getNotes(this.id)
+            .then(lines => this.setState({ lines }, () => this.canvasRender()));
+
         document.body.style = {
             overflow: 'hidden',
             position: 'fixed',
@@ -219,7 +230,7 @@ class NotesPage extends React.Component {
         }
         this.setState({
             lines: newLines.filter(l => l.length > 1),
-        }, () => localStorage.setItem('chroamNotes', JSON.stringify(this.state.lines)));
+        }, () => this.save());
     }
 
     touchStart(e) {

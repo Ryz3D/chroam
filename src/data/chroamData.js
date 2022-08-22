@@ -1,9 +1,29 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Buffer } from 'buffer';
 import Parse from 'parse/dist/parse.min.js';
 
 class ChroamData {
     static local = localStorage.getItem('local') ? true : false;
     static user = { id: localStorage.getItem('chroamUser') || uuidv4().slice(0, 8) };
+
+    static getNotes(name) {
+        return new Promise(resolve => {
+            const ids = JSON.parse(localStorage.getItem('chroamNoteIDs') || '{}');
+            if (ids[Buffer.from(name).toString('base64')])
+                resolve(JSON.parse(localStorage.getItem(ids[Buffer.from(name).toString('base64')])));
+            else
+                resolve([]);
+        });
+    }
+
+    static setNotes(name, data) {
+        const ids = JSON.parse(localStorage.getItem('chroamNoteIDs') || '{}');
+        var id = ids[Buffer.from(name).toString('base64')];
+        if (!id)
+            ids[Buffer.from(name).toString('base64')] = id = uuidv4();
+        localStorage.setItem('chroamNoteIDs', JSON.stringify(ids));
+        localStorage.setItem(id, JSON.stringify(data));
+    }
 
     static readDBEntry(e) {
         if (e) {

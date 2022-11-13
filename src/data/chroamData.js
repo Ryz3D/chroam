@@ -31,7 +31,7 @@ class ChroamData {
                 id: e.id,
                 type: e.get('type'),
                 name: e.get('name'),
-                content: e.get('content'),
+                content: JSON.parse(e.get('content')),
             };
         }
         else {
@@ -75,7 +75,7 @@ class ChroamData {
                             o.set('user', ChroamData.user.id);
                             o.set('type', type);
                             o.set('name', name);
-                            o.set('content', content);
+                            o.set('content', JSON.stringify(content));
                             await o.save();
                         }
                         resolve();
@@ -167,7 +167,7 @@ class ChroamData {
                     }
                     o.set('type', e.type);
                     o.set('name', e.name);
-                    o.set('content', e.content);
+                    o.set('content', JSON.stringify(e.content));
                     o.save()
                         .then(o2 => resolve(o2.id));
                     ChroamData.timeoutTable[e.id] = undefined;

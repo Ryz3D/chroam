@@ -27,11 +27,12 @@ class ChroamData {
 
     static readDBEntry(e) {
         if (e) {
+            const content = e.get('content');
             return {
                 id: e.id,
                 type: e.get('type'),
                 name: e.get('name'),
-                content: JSON.parse(e.get('content')),
+                content: content ? JSON.parse(content) : { text: [], highlighted: false },
             };
         }
         else {

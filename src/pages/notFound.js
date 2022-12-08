@@ -6,7 +6,10 @@ import routerNavigate from '../wrapper/routerNavigate';
 class NotFoundPage extends React.Component {
     render() {
         return (
-            <div>
+            <mui.Box sx={{
+                textAlign: 'center',
+                marginTop: '40px',
+            }}>
                 <mui.Typography variant='h1'>
                     404
                 </mui.Typography>
@@ -16,7 +19,7 @@ class NotFoundPage extends React.Component {
                 <mui.Button startIcon={<ArrowLeft />} variant='contained' onClick={() => this.props.navigate('/')}>
                     Fuck go back
                 </mui.Button>
-            </div>
+            </mui.Box>
         );
     }
 }

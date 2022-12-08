@@ -4,6 +4,7 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material';
 import ChroamDate from '../data/chroamDate';
 import ChroamData from '../data/chroamData';
 import muiTheme from '../wrapper/muiTheme';
+import ContentLoader from './contentLoader';
 
 class DailyCalendarComponent extends React.Component {
     constructor(props) {
@@ -15,13 +16,17 @@ class DailyCalendarComponent extends React.Component {
             hasDaily: [],
             isLit: [],
             entries: [],
+            loaded: false,
         };
     }
 
     componentDidMount() {
         ChroamData.getEntries('daily')
             .then(entries => {
-                this.setState({ entries });
+                this.setState({
+                    entries,
+                    loaded: true,
+                });
             });
     }
 
@@ -97,6 +102,7 @@ class DailyCalendarComponent extends React.Component {
 
         return (
             <div>
+                <ContentLoader active={!this.state.loaded} />
                 <div style={controlStyle}>
                     <mui.Button onClick={() => this.prevMonth()}>
                         <ArrowLeftOutlined />

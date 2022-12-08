@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import BasicUIComponent from '../components/basicUI';
+import ContentLoader from '../components/contentLoader';
 import ChroamData from '../data/chroamData';
 import routerNavigate from '../wrapper/routerNavigate';
 
@@ -9,6 +10,7 @@ class MentionsPage extends React.Component {
         super(props);
         this.state = {
             entries: [],
+            loaded: false,
         };
     }
 
@@ -16,6 +18,7 @@ class MentionsPage extends React.Component {
         ChroamData.getEntries('mention')
             .then(entries => this.setState({
                 entries,
+                loaded: true,
             }));
     }
 
@@ -31,6 +34,7 @@ class MentionsPage extends React.Component {
             <BasicUIComponent
                 setDark={this.props.setDark}
                 setPage={(u) => this.props.navigate(u)}>
+                <ContentLoader active={!this.state.loaded} />
                 <div style={rootStyle}>
                     {this.state.entries.map((e, i) =>
                         <p key={i}>

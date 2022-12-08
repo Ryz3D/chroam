@@ -8,6 +8,7 @@ import ChroamDate from '../data/chroamDate';
 import EditableTextComponent from '../components/editableText';
 import ChroamData from '../data/chroamData';
 import muiTheme from '../wrapper/muiTheme';
+import ContentLoader from '../components/contentLoader';
 
 class DailyPage extends React.Component {
     constructor(props) {
@@ -136,6 +137,7 @@ class DailyPage extends React.Component {
                 setDark={this.props.setDark}
                 onDaySwitch={(f) => this.onDaySwitch(f)}
                 setPage={(u) => this.setPage(u)}>
+                <ContentLoader active={!this.state.loaded} />
                 <BigHeaderComponent
                     header={ChroamDate.stringifyDate(this.date, true)}
                     end={

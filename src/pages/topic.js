@@ -6,6 +6,7 @@ import Icons from '../data/icons';
 import EditableTextComponent from '../components/editableText';
 import LinkListComponent from '../components/linkList';
 import ChroamData from '../data/chroamData';
+import ContentLoader from '../components/contentLoader';
 
 class TopicPage extends React.Component {
     constructor(props) {
@@ -20,6 +21,7 @@ class TopicPage extends React.Component {
                     highlighted: false,
                 },
             },
+            loaded: false,
         };
     }
 
@@ -33,6 +35,9 @@ class TopicPage extends React.Component {
     }
 
     async locationUpdate() {
+        this.setState({
+            loaded: false,
+        });
         const urlSearch = new URLSearchParams(window.location.search);
         const name = urlSearch.get('i') || '';
         var entry = await ChroamData.getEntryByName(name, 'topic');
@@ -43,6 +48,7 @@ class TopicPage extends React.Component {
         }
         this.setState({
             entry,
+            loaded: true,
         });
     }
 
@@ -88,6 +94,7 @@ class TopicPage extends React.Component {
             <BasicUIComponent
                 setDark={this.props.setDark}
                 setPage={(u) => this.setPage(u)}>
+                <ContentLoader active={!this.state.loaded} />
                 <BigHeaderComponent header={this.state.entry.name} subheader={
                     <>
                         {Icons.create(Icons.topic.default, { secondary: true, style: { position: 'relative', top: '5.5px' } })}

@@ -3,7 +3,7 @@ import { Buffer } from 'buffer';
 import Parse from 'parse/dist/parse.min.js';
 
 class ChroamData {
-    static local = localStorage.getItem('local') ? true : false;
+    static local = localStorage.getItem('online') ? false : true;
     static user = { id: localStorage.getItem('chroamUser') || uuidv4().slice(0, 8) };
 
     static getNotes(name) {

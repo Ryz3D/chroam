@@ -7,6 +7,7 @@ import EditableTextComponent from '../components/editableText';
 import LinkListComponent from '../components/linkList';
 import ChroamData from '../data/chroamData';
 import ContentLoader from '../components/contentLoader';
+import routerLocation from '../wrapper/routerLocation';
 
 class TopicPage extends React.Component {
     constructor(props) {
@@ -25,12 +26,13 @@ class TopicPage extends React.Component {
         };
     }
 
-    componentDidMount() {
-        this.locationUpdate();
+    componentDidUpdate(prevProps) {
+        if (this.props.location.search !== prevProps.location.search) {
+            this.locationUpdate();
+        }
     }
 
-    setPage(u) {
-        this.props.navigate(u);
+    componentDidMount() {
         this.locationUpdate();
     }
 
@@ -92,8 +94,7 @@ class TopicPage extends React.Component {
     render() {
         return (
             <BasicUIComponent
-                setDark={this.props.setDark}
-                setPage={(u) => this.setPage(u)}>
+                setDark={this.props.setDark}>
                 <ContentLoader active={!this.state.loaded} />
                 <BigHeaderComponent header={this.state.entry.name} subheader={
                     <>
@@ -105,16 +106,14 @@ class TopicPage extends React.Component {
                     content={this.state.entry.content}
                     onLineChange={(i, t) => this.onLineChange(i, t)}
                     onNextLine={(i, cb, t) => this.onNextLine(i, cb, t)}
-                    onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)}
-                    locationUpdate={() => this.locationUpdate()} />
+                    onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)} />
                 <div style={{ height: '2rem' }} />
                 <LinkListComponent
-                    entry={this.state.entry}
-                    locationUpdate={() => this.locationUpdate()} />
+                    entry={this.state.entry} />
                 <div style={{ height: '2rem' }} />
             </BasicUIComponent>
         );
     }
 }
 
-export default routerNavigate(TopicPage);
+export default routerLocation(routerNavigate(TopicPage));

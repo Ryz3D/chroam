@@ -175,7 +175,7 @@ class SettingsPage extends React.Component {
         this.setState({
             online,
         });
-        localStorage.setItem('local', online ? '' : '1');
+        localStorage.setItem('online', online ? '1' : '');
         ChroamData.local = !online;
     }
 
@@ -213,8 +213,7 @@ class SettingsPage extends React.Component {
     render() {
         return (
             <BasicUIComponent
-                setDark={this.props.setDark}
-                setPage={(u) => this.props.navigate(u)}>
+                setDark={this.props.setDark}>
                 <div>
                     <mui.ButtonGroup fullWidth variant='contained' color='primary'>
                         <mui.Button onClick={() => this.export()}>

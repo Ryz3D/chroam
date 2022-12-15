@@ -137,8 +137,7 @@ class EditableTextComponent extends React.Component {
                                 onLineChange={(t) => this.onLineChange(i, t)}
                                 onNextLine={() => this.onNextLine(i, line)}
                                 onLastLine={(d) => this.onLastLine(i, d)}
-                                onLastNextLine={() => this.onLastNextLine(i)}
-                                locationUpdate={this.props.locationUpdate} />
+                                onLastNextLine={() => this.onLastNextLine(i)} />
                         </div>
                         <div style={lineNStyle}>
                             #{i + 1}

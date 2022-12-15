@@ -196,7 +196,7 @@ class BasicUIComponent extends React.Component {
                                 </mui.ListItemText>
                             </mui.MenuItem>
                         </mui.Menu>
-                        <SearchBarComponent setPage={this.props.setPage} />
+                        <SearchBarComponent />
                         {showDaySwitcher &&
                             <>
                                 <mui.Tooltip arrow title='Last daily'>

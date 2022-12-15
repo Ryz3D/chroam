@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import BasicUIComponent from '../components/basicUI';
 import ContentLoader from '../components/contentLoader';
 import ChroamData from '../data/chroamData';
-import routerNavigate from '../wrapper/routerNavigate';
 
 class MentionsPage extends React.Component {
     constructor(props) {
@@ -32,8 +31,7 @@ class MentionsPage extends React.Component {
 
         return (
             <BasicUIComponent
-                setDark={this.props.setDark}
-                setPage={(u) => this.props.navigate(u)}>
+                setDark={this.props.setDark}>
                 <ContentLoader active={!this.state.loaded} />
                 <div style={rootStyle}>
                     {this.state.entries.map((e, i) =>
@@ -49,4 +47,4 @@ class MentionsPage extends React.Component {
     }
 }
 
-export default routerNavigate(MentionsPage);
+export default MentionsPage;

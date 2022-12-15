@@ -4,6 +4,7 @@ import {
     Biotech as BiotechIcon,
 } from '@mui/icons-material';
 import SearchPopoverComponent from './searchPopover';
+import routerNavigate from '../wrapper/routerNavigate';
 
 class SearchBarComponent extends React.Component {
     constructor(props) {
@@ -101,7 +102,7 @@ class SearchBarComponent extends React.Component {
                         open={this.state.open} onClose={() => this.setState({ open: false, value: '' })}
                         anchorEl={this.inputRef.current}
                         query={this.state.value}
-                        setPage={(u) => { this.props.setPage(u); this.setState({ open: false, value: '' }); }}
+                        setPage={(u) => { this.props.navigate(u); this.setState({ open: false, value: '' }); }}
                         allowTopic={true}
                         allowDaily={true}
                         allowMention={true} />
@@ -111,4 +112,4 @@ class SearchBarComponent extends React.Component {
     }
 }
 
-export default SearchBarComponent;
+export default routerNavigate(SearchBarComponent);

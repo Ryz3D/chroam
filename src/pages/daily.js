@@ -9,6 +9,7 @@ import EditableTextComponent from '../components/editableText';
 import ChroamData from '../data/chroamData';
 import muiTheme from '../wrapper/muiTheme';
 import ContentLoader from '../components/contentLoader';
+import routerLocation from '../wrapper/routerLocation';
 
 class DailyPage extends React.Component {
     constructor(props) {
@@ -21,6 +22,12 @@ class DailyPage extends React.Component {
             loaded: false,
         };
         this.keyListener = (e) => this.onKeyDown(e);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.location.search !== prevProps.location.search) {
+            this.locationUpdate();
+        }
     }
 
     componentDidMount() {
@@ -47,11 +54,6 @@ class DailyPage extends React.Component {
         }
     }
 
-    setPage(u) {
-        this.props.navigate(u);
-        this.locationUpdate();
-    }
-
     async locationUpdate() {
         const urlSearch = new URLSearchParams(window.location.search);
         const urlDate = ChroamDate.deserializeDate(urlSearch.get('i') || '');
@@ -74,7 +76,6 @@ class DailyPage extends React.Component {
         }
         if (nextDate !== null) {
             this.props.navigate('/?i=' + ChroamDate.serializeDate(nextDate));
-            this.locationUpdate();
         }
     }
 
@@ -135,8 +136,7 @@ class DailyPage extends React.Component {
         return (
             <BasicUIComponent
                 setDark={this.props.setDark}
-                onDaySwitch={(f) => this.onDaySwitch(f)}
-                setPage={(u) => this.setPage(u)}>
+                onDaySwitch={(f) => this.onDaySwitch(f)}>
                 <ContentLoader active={!this.state.loaded} />
                 <BigHeaderComponent
                     header={ChroamDate.stringifyDate(this.date, true)}
@@ -177,7 +177,6 @@ class DailyPage extends React.Component {
                     onLineChange={(i, t) => this.onLineChange(i, t)}
                     onNextLine={(i, cb, t) => this.onNextLine(i, cb, t)}
                     onDeleteLine={(i, cb) => this.onDeleteLine(i, cb)}
-                    locationUpdate={() => this.locationUpdate()}
                     onEdit={(editing) => this.setState({ editing })} />
                 <div style={{ height: '2rem' }} />
             </BasicUIComponent>
@@ -185,4 +184,4 @@ class DailyPage extends React.Component {
     }
 }
 
-export default routerNavigate(muiTheme(DailyPage));
+export default routerLocation(routerNavigate(muiTheme(DailyPage)));

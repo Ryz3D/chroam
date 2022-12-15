@@ -5,6 +5,7 @@ import ChroamDate from '../data/chroamDate';
 import ChroamData from '../data/chroamData';
 import muiTheme from '../wrapper/muiTheme';
 import ContentLoader from './contentLoader';
+import routerNavigate from '../wrapper/routerNavigate';
 
 class DailyCalendarComponent extends React.Component {
     constructor(props) {
@@ -73,7 +74,7 @@ class DailyCalendarComponent extends React.Component {
 
     openDaily(i) {
         const date = new Date(this.state.year, this.state.month, i + 1);
-        this.props.setPage('/?i=' + ChroamDate.serializeDate(date));
+        this.props.navigate('/?i=' + ChroamDate.serializeDate(date));
     }
 
     render() {
@@ -146,4 +147,4 @@ class DailyCalendarComponent extends React.Component {
     }
 }
 
-export default muiTheme(DailyCalendarComponent);
+export default routerNavigate(muiTheme(DailyCalendarComponent));

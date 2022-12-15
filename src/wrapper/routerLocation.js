@@ -7,7 +7,7 @@ export default function routerLocation(Component) {
         return (
             <Component
                 {...props}
-                navigate={location}
+                location={location}
                 ref={ref}
             />
         );

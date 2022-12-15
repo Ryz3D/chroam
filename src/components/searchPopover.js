@@ -159,9 +159,9 @@ class SearchPopoverComponent extends React.Component {
                     )}
                     <mui.Divider />
                     {this.props.allowTopic &&
-                        <SearchResultComponent type='topic' new disabled={this.props.query === '' || topicExists}
-                            id={continueKey + 0} onClick={() => this.toTopic()}>
-                            New topic
+                        <SearchResultComponent type='topic' new={!topicExists || !this.props.query} highlighted={topicExists && this.props.query}
+                            disabled={this.props.query === ''} id={continueKey + 0} onClick={() => this.toTopic()}>
+                            {topicExists && this.props.query ? 'Go to' : 'New'} topic
                         </SearchResultComponent>
                     }
                     {this.props.allowDaily &&
@@ -184,9 +184,9 @@ class SearchPopoverComponent extends React.Component {
                         </SearchResultComponent>
                     }
                     {this.props.allowMention &&
-                        <SearchResultComponent type='mention' new disabled={this.props.query === '' || mentionExists}
-                            id={continueKey + 2} onClick={() => this.toMention()}>
-                            New mention
+                        <SearchResultComponent type='mention' new={!mentionExists || !this.props.query} highlighted={mentionExists && this.props.query}
+                            disabled={this.props.query === ''} id={continueKey + 2} onClick={() => this.toMention()}>
+                            {mentionExists && this.props.query ? 'Go to' : 'New'} mention
                         </SearchResultComponent>
                     }
                 </mui.List>

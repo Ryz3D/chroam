@@ -1,7 +1,6 @@
 import React from 'react';
 import BasicUIComponent from '../components/basicUI';
 import DailyCalendarComponent from '../components/dailyCalendar';
-import routerNavigate from '../wrapper/routerNavigate';
 
 class CalendarPage extends React.Component {
     render() {
@@ -13,15 +12,13 @@ class CalendarPage extends React.Component {
         };
 
         return (
-            <BasicUIComponent
-                setDark={this.props.setDark}
-                setPage={(u) => this.props.navigate(u)}>
+            <BasicUIComponent setDark={this.props.setDark}>
                 <div style={rootStyle}>
-                    <DailyCalendarComponent setPage={(u) => this.props.navigate(u)} />
+                    <DailyCalendarComponent />
                 </div>
             </BasicUIComponent>
         );
     }
 }
 
-export default routerNavigate(CalendarPage);
+export default CalendarPage;

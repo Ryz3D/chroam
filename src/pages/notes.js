@@ -319,7 +319,6 @@ class NotesPage extends React.Component {
         return (
             <BasicUIComponent
                 setDark={this.props.setDark}
-                setPage={(u) => this.setPage(u)}
                 clearAll={() => this.clearAll()}
                 export={() => ({ url: this.canvasRef.current.toDataURL(), name: 'chroamNotes' })}>
                 <BigHeaderComponent

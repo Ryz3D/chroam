@@ -59,7 +59,6 @@ class EditLineComponent extends React.Component {
 
     onClick(event) {
         if (!(event.target.parentNode || { id: '' }).id.startsWith('chroamref') && !this.props.disabled) {
-            console.log(`set cursor based on ${event.clientX} and ${event.clientY}`);
             this.props.onEdit(true);
         }
     }
@@ -79,6 +78,9 @@ class EditLineComponent extends React.Component {
                 }
                 this.props.onEdit(false, event);
                 return false;
+            case 27:
+                this.props.onEdit(false);
+                break;
             case 8: // backspace
                 if (!this.props.text || event.shiftKey) {
                     event.preventDefault();
@@ -138,15 +140,16 @@ class EditLineComponent extends React.Component {
         const input = this.inputRef.current.getElementsByTagName('div')[0].getElementsByTagName('textarea')[0];
         const cursorText = this.props.text.slice(0, input.selectionEnd);
         const restText = this.props.text.slice(input.selectionEnd);
-        const end = restText === '' ? ' ' : '';
+        var end = restText.startsWith(']]') ? '' : ']]';
+        end += restText === '' ? ' ' : '';
         if (u.startsWith('/mention')) {
-            this.inputUpdate(cursorText.replace(/#([äöüÄÖÜß_-\w]*)$/g, '').trimRight() + ` #${name}${end}${restText}`);
+            this.inputUpdate(cursorText.replace(/#([äöüÄÖÜß_-\w]*)$/g, '') + `#${name}${end}${restText}`);
             this.setState({
                 search: '',
             });
         }
         if (u.startsWith('/topic')) {
-            this.inputUpdate(cursorText.replace(/\[\[([^\]]*)$/g, '').trimRight() + ` [[${name}]]${end}${restText}`);
+            this.inputUpdate(cursorText.replace(/\[\[([^\]]*)$/g, '') + `[[${name}${end}${restText}`);
             this.setState({
                 search: '',
             });
@@ -184,12 +187,12 @@ class EditLineComponent extends React.Component {
                 textComponents.push(<div key={`${key}t${i2 * 2}`} style={textCompStyle}>{text.slice(index2, m2.index)}</div>);
                 textComponents.push(<div key={`${key}t${i2 * 2 + 1}`} style={hrefCompStyle} id={`chroamref${i}`} onClick={(e) => {
                     e.preventDefault();
-                    window.location = m2[0];
+                    window.open(m2[0], '_blank').focus();
                     return false;
                 }}><u>{m2[0]}</u></div>);
                 index2 = m2.index + m2[0].length;
 
-                if (['png', 'jpg', 'jpeg', 'gif', 'webp'].some(p => m2[0].toLowerCase().endsWith('.' + p))) {
+                if (['png', 'jpg', 'jpeg', 'gif', 'webp'].some(p => m2[0].toLowerCase().includes('.' + p))) {
                     imgComponents.push(<img key={`${key}i${i2}`} style={imgStyle}
                         src={m2[0]} alt={m2[0]}
                         onError={(e) => e.target.style.display = 'none'} />);
@@ -213,7 +216,6 @@ class EditLineComponent extends React.Component {
             textComponents.push(<div key={i * 2 + 1} style={refCompStyle} id={`chroamref${i}`} onClick={(e) => {
                 e.preventDefault();
                 this.props.navigate(isTopic ? `/topic?i=${encodeURIComponent(m[1])}` : `/mention?i=${encodeURIComponent(m[1])}`);
-                this.props.locationUpdate();
                 return false;
             }}><u>{m[0]}</u></div>);
             index = m.index + m[0].length;

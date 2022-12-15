@@ -6,6 +6,7 @@ import Icons from '../data/icons';
 import LinkListComponent from '../components/linkList';
 import ChroamData from '../data/chroamData';
 import ContentLoader from '../components/contentLoader';
+import routerLocation from '../wrapper/routerLocation';
 
 class MentionPage extends React.Component {
     constructor(props) {
@@ -20,12 +21,13 @@ class MentionPage extends React.Component {
         };
     }
 
-    componentDidMount() {
-        this.locationUpdate();
+    componentDidUpdate(prevProps) {
+        if (this.props.location.search !== prevProps.location.search) {
+            this.locationUpdate();
+        }
     }
 
-    setPage(u) {
-        this.props.navigate(u);
+    componentDidMount() {
         this.locationUpdate();
     }
 
@@ -50,8 +52,7 @@ class MentionPage extends React.Component {
     render() {
         return (
             <BasicUIComponent
-                setDark={this.props.setDark}
-                setPage={(u) => this.setPage(u)}>
+                setDark={this.props.setDark}>
                 <ContentLoader active={!this.state.loaded} />
                 <BigHeaderComponent header={this.state.entry.name} subheader={
                     <>
@@ -61,12 +62,11 @@ class MentionPage extends React.Component {
                 } />
                 <br />
                 <LinkListComponent
-                    entry={this.state.entry}
-                    locationUpdate={() => this.locationUpdate()} />
+                    entry={this.state.entry} />
                 <div style={{ height: '2rem' }} />
             </BasicUIComponent>
         );
     }
 }
 
-export default routerNavigate(MentionPage);
+export default routerLocation(routerNavigate(MentionPage));
